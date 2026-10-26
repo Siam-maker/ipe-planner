@@ -1,0 +1,6 @@
+{
+  "name": "IPE Study Planner · BUET",
+  "description": "Comprehensive study planner, syllabus topic tracker, GPA calculator, and attendance & CT marks analyzer for BUET Industrial & Production Engineering students.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

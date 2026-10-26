@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IPE Study Planner · BUET</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2333;--mute:#6a7388;--acc:#4f6bed;--accl:#eef1fe;--ok:#1f9d6b;--okl:#e6f6ef;--warn:#c47a10;--warnl:#fdf3e1;--bad:#d1453f;--badl:#fdecea;--line:#e5e8f0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:680px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:24px;margin:0}header p{margin:2px 0 16px}
+.mute{color:var(--mute)}small{font-size:12.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 10px}
+.pick{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:flex;background:var(--accl);border-radius:10px;padding:3px}
+.seg button,.tabs button{border:0;background:none;font:inherit;padding:6px 12px;border-radius:8px;color:var(--mute);cursor:pointer}
+.seg button.on{background:var(--acc);color:#fff}
+.tabs{display:flex;gap:4px;margin:14px 0;border-bottom:1px solid var(--line)}
+.tabs button{border-radius:0;padding:10px 14px;border-bottom:2px solid transparent}
+.tabs button.on{color:var(--acc);border-color:var(--acc);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.card.row{padding:12px 16px;border-bottom:1px solid var(--line)}
+.card.ok{background:var(--okl);border-color:#bfe6d4}.card.warn{background:var(--warnl);border-color:#f0d9a8}.card.bad{background:var(--badl);border-color:#f2c4c0}
+.tag{font-size:12px;background:var(--accl);color:var(--acc);border-radius:20px;padding:1px 9px;margin-left:8px;white-space:nowrap}
+.bar{height:6px;background:var(--line);border-radius:9px;margin:8px 0 4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);border-radius:9px}
+summary{cursor:pointer;list-style:none}summary::-webkit-details-marker{display:none}
+.chk{display:block;padding:6px 0 0;cursor:pointer}.chk input{margin-right:8px;accent-color:var(--acc)}
+.hero{text-align:center}.gpa,.big{font-size:34px;display:block;color:var(--acc)}.row .big{font-size:20px;display:inline}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);max-width:100%}
+label{display:block;font-weight:600;margin-bottom:10px}label input,label select{display:block;margin-top:4px;width:100%}
+.cts{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;text-align:left;border-bottom:1px solid var(--line)}
+td.ok{color:var(--ok)}td.warn{color:var(--warn)}td.bad{color:var(--bad)}
+footer{margin-top:24px;font-size:12.5px;color:var(--mute)}
+</style></head>
+<body><div id="app"></div>
+<script>
+const G=[["A+",4,80],["A",3.75,75],["A-",3.5,70],["B+",3.25,65],["B",3,60],["B-",2.75,55],["C+",2.5,50],["C",2.25,45],["D",2,40],["F",0,0]];
+const T={
+"1-1":[["Phy 117","Structure of Matter, Electricity, Magnetism & Modern Physics",3,"T","Structure of matter & bonds|X-ray diffraction, Bragg’s law|Band theory: metal, insulator, semiconductor|Electric field, Gauss’s law, potential|Capacitors & dielectrics|Current, Ohm’s law, Ampere’s law|Faraday, Lenz, inductance, magnetic materials|Relativity & Lorentz transformation|Photoelectric, Compton, de Broglie, Bohr|Radioactivity & nuclear physics"],
+["Chem 119","Chemistry I",3,"T","Atomic structure & periodic table|Bonding & molecular structure|Transition metals & noble gases|Acids, bases, pH|Solutions & colligative properties|Chemical equilibrium|Thermochemistry|Electrochemistry|Chemical kinetics|Phase rule & diagrams|Organic chemistry, polymers, dyes"],
+["Math 191","Differential & Integral Calculus",4,"T","Limit, continuity, differentiability|Differentiation techniques & Leibniz|Rolle, mean value, Taylor, Maclaurin|L’Hospital, maxima-minima|Curvature, asymptotes, curve tracing|Partial differentiation & Euler’s theorem|Integration techniques|Definite & improper integrals, Beta-Gamma|Area, arc length, volumes of revolution"],
+["Hum 211","Sociology",2,"T","Basic concepts & social evolution|Culture & civilization|Social structure of Bangladesh|Population & resources|Industrial revolution, family, urbanization|Cooperative & socialist movements, rural sociology"],
+["IPE 105","Principles of Cost & Management Accounting",3,"T","Accounting equation & double entry|Financial statements|Cost & management accounting scope|Material, labor, overheads|Marginal vs absorption costing|Statement analysis & budgets"],
+["ME 160","Mechanical Engineering Drawing I",1.5,"S"],["Shop 170","Machine Shop",0.75,"S"],["Chem 114","Inorganic Quantitative Analysis Sessional",1.5,"S"],["Hum 102","English Language Practice",1.5,"S"]],
+"1-2":[["Math 193","Vector, Matrix & Co-ordinate Geometry",4,"T","Vectors & products|Matrices & inverse|Rank & linear equations|Eigenvalues & eigenvectors|Conics & coordinate transformation|3D lines & planes|Sphere & quadric surfaces"],
+["Phy 163","Waves, Optics & Wave Mechanics",3,"T","SHM, damped & forced oscillation|Waves & acoustics|Geometrical optics & aberrations|Schrödinger equation & wave mechanics|Bose-Einstein & Fermi-Dirac statistics|Interference, diffraction, polarization|Sound & heat"],
+["Chem 143","Chemistry of Materials",2,"T","Glass|Paints & coatings|Plastics|Fibers|Rubber|Lubricants"],
+["MME 195","Engineering Materials I",3,"T","Structure of metals, ceramics, polymers|Elastic & plastic behavior|Fracture, fatigue, creep, corrosion|Phase diagrams|Iron & steel, Fe-Fe₃C diagram|Heat treatment & alloy steels|Non-ferrous metals"],
+["EEE 167","Basic Electrical & Electronic Circuits",4,"T","DC circuits & network theorems|AC & phasors|RL, RC, RLC analysis|Three-phase circuits|Diode|BJT & amplifiers"],
+["IPE 104","Engineering Graphics",1.5,"S"],["Phy 102","Physics Sessional",1.5,"S"],["EEE 168","Circuits Sessional",1.5,"S"],["Shop 160","Foundry & Welding Shop",0.75,"S"]],
+"2-1":[["Math 291","Differential Equations, Vector Calculus & Laplace",3,"T","First-order ODEs|Higher-order linear ODEs|Frobenius, Bessel, Legendre|Grad, div, curl|Line/surface/volume integrals, Green, Stokes, Gauss|Laplace transform & applications"],
+["EEE 271","Electrical Machines & Electronics",3,"T","Transformer|DC motor|Induction & synchronous motors|Op-amps|SCR & power control|Transducers"],
+["MME 295","Engineering Materials II",2,"T","Ceramics|Glasses|Polymers|Composites"],
+["CSE 295","Computer Programming Techniques",3,"T","Number systems|Data types, operators, control flow|Arrays|Functions & recursion|Pointers & strings|Structures & unions|File I/O"],
+["ME 245","Engineering Mechanics & Theory of Machines",4,"T","Statics: trusses, friction, centroids|Kinetics of particles & rigid bodies|Mechanisms & balancing|Vibration|Belts, gears, cams"],
+["EEE 272","Machines & Electronics Sessional",1.5,"S"],["MME 296","Engineering Materials Sessional",1.5,"S"],["CSE 296","Programming Sessional",1.5,"S"],["IPE 204","Graphics & CAD Sessional",1.5,"S"]],
+"2-2":[["IPE 205","Manufacturing Processes I",3,"T","Casting|Casting defects & mold design|Joining & welding|Special welding|Extrusion & press working|Powder metallurgy & ceramics"],
+["IPE 207","Probability & Statistics",4,"T","Probability laws|Random variables & expectation|Distributions|Sampling & CLT|Estimation & hypothesis tests|Regression & correlation|ANOVA & experimental design"],
+["IPE 209","Engineering Economy",2,"T","Cash flow & time value|Investment appraisal (PW, AW, IRR, B/C)|Taxes, depreciation, inflation|Sensitivity analysis"],
+["ME 243","Mechanics of Solids",3,"T","Stress & strain|Cylinders & spheres|Shear force & bending moment|Beam stresses & deflection|Torsion & springs|Mohr’s circle & combined stress|Columns & failure theories"],
+["ME 265","Thermodynamics & Heat Transfer",4,"T","Basic laws & processes|Thermodynamic cycles|Engines, turbines, refrigeration|Conduction|Convection & radiation|Heat exchangers"],
+["IPE 206","Manufacturing Processes I Sessional",0.75,"S"],["ME 244","Mechanics of Solids Sessional",0.75,"S"],["ME 266","Thermodynamics Sessional",1.5,"S"]],
+"3-1":[["ME 223","Fluid Mechanics & Machinery",3,"T","Fluid properties|Fluid statics & manometers|Continuity & Bernoulli|Flow measurement|Pipe friction losses"],
+["IPE 301","Measurement, Instrumentation & Control",3,"T","Linear measurement|Limits, fits & gauges|Surface & form measurement|NDT & inspection|Instrumentation|Control systems & feedback"],
+["Hum 277","Fundamentals of Economics",3,"T","Demand, supply, utility|Production & cost theory|Market structures|National income|Keynesian analysis, fiscal & monetary policy|Development economics"],
+["IPE 305","Manufacturing Processes II",3,"T","Chip formation & tool geometry|Cutting forces & tool life|Machining processes|Threads & gears|Modern machining (EDM, laser, etc.)|Plastics processing|Process selection"],
+["IPE 307","Operations Research",4,"T","Optimization basics|Simplex & duality|Sensitivity analysis|Transportation & assignment|Game theory|Integer & dynamic programming|Queuing models|Simulation"],
+["ME 224","Fluid Mechanics Sessional",1.5,"S"],["IPE 302","Measurement Sessional",0.75,"S"],["IPE 306","Manufacturing Processes II Sessional",0.75,"S"]],
+"3-2":[["IPE 303","Product Design I",3,"T","Design process & customer needs|Value engineering|Concept generation|Design for strength & fatigue|Shaft, key, screw, coupling|Clutches & brakes"],
+["IPE 311","Material Handling & Maintenance Management",3,"T","Handling systems & unit loads|Conveyors & equipment|Warehouse, ASRS, AGV|Package testing|Maintenance types & policies|Replacement strategies & planning"],
+["IPE 315","Operations Management",3,"T","Production systems & forecasting|Inventory models & ABC|Aggregate planning & MPS|MRP & scheduling|Work study|JIT, TQC, group technology"],
+["IPE 319","Quality Management",3,"T","Quality concepts & Deming|SPC tools & control charts|Process capability|Design of experiments|Acceptance sampling|Reliability & FMEA|ISO standards & TQM"],
+["IPE 329","Numerical Analysis",3,"T","Errors & approximations|Root finding|Linear systems|Eigenvalue problems|Interpolation & curve fitting|Numerical calculus|ODE methods (Euler, Runge-Kutta)|Numerical optimization"],
+["IPE 304","Product Design I Sessional",1.5,"S"],["IPE 312","Handling & Maintenance Sessional",0.75,"S"],["IPE 320","Quality Management Sessional",0.75,"S"],["IPE 322","Business Communication Seminar I",0.5,"S"]],
+"4-1":[["IPE 403","Project & Environmental Management",3,"T","Project planning & appraisal|Scheduling: CPM & PERT|Resource allocation & control|Environmental impact assessment|Pollution & environmental economics"],
+["IPE 407","Ergonomics & Safety Management",3,"T","Man-machine interfaces|Biomechanics & physical work|Anthropometry & workplace design|Noise, light, heat effects|Safety & risk management"],
+["IPE 451","Supply Chain Management",3,"T","Supply chain basics|Forecasting & planning|Procurement & sourcing|Inventory systems|Stores management|Physical distribution"],
+["IPE 317","Product Design II",3,"T","Reverse engineering|Alternative solutions|Design for assembly|Reliability & life cycle|Prototype design|Gears, bearings, power transmission"],
+["Optional I","Optional course (one from the optional list)",3,"T"],
+["IPE 400","Project & Thesis (part 1, grade X)",3,"S","",1],["IPE 408","Ergonomics Sessional",0.75,"S"],["IPE 318","Product Design II Sessional",1.5,"S"],["IPE 300","Industrial Practice (S/U)",3,"S","",1]],
+"4-2":[["IPE 401","Machine Tools",4,"T","Machine tool characteristics|Drive systems & gearboxes|Spindles, bearings, slideways|Locators & clamps|Lathe & drilling case studies|Milling, grinding, gear machines|Dynamics & acceptance tests"],
+["IPE 409","CAD/CAM",3,"T","CAD basics|2D & 3D CAD|NC principles & programming|CNC & APT programming|FMS|Robotics"],
+["IPE 411","Industrial & Business Management",3,"T","Management process & thought|Society & ethics|Organization theory|HR & motivation|MIS|Marketing & selling"],
+["Optional II","Optional course (one from the optional list)",3,"T"],
+["IPE 400","Project & Thesis (part 2)",3,"S"],["IPE 402","Machine Tools Sessional",1.5,"S"],["IPE 410","CAD/CAM Sessional",0.75,"S"],["IPE 470","Industrial Simulation Sessional",0.75,"S"],["IPE 480","Business Communication Seminar II",0.5,"S"]]
+};
+const $=s=>document.querySelector(s);
+let S={};try{S=JSON.parse(localStorage.getItem('ipe-planner')||'{}')}catch(e){}
+S.lv=S.lv||1;S.tm=S.tm||1;S.tab=S.tab||'syl';S.tg=S.tg||3.85;
+['done','gr','st','ct','at','op'].forEach(k=>S[k]=S[k]||{});
+const save=()=>{try{localStorage.setItem('ipe-planner',JSON.stringify(S))}catch(e){}};
+const K=x=>S.lv+'-'+S.tm+'|'+x.code;
+const cs=()=>T[S.lv+'-'+S.tm].map(a=>({code:a[0],name:a[1],cr:a[2],ty:a[3],tp:a[4]?a[4].split('|'):[],ng:a[5]}));
+const gname=v=>(G.find(g=>Math.abs(g[1]-v)<.01)||['F'])[0];
+const go=(p,v)=>{S[p]=v;save();render()};
+const tg=(k,v)=>{S.done[k]=v;save();render()};
+
+function vSyl(){let tot=0,dn=0;
+ const h=cs().map(x=>{const k=K(x),n=x.tp.length;
+  if(!n)return `<div class="card"><b>${x.code}</b> ${x.name}<span class="tag">${x.cr} cr</span><br><small class="mute">${x.ty=='S'?'Sessional / lab: no topic list in the curriculum.':'Pick your course from the optional list.'}</small></div>`;
+  const d=x.tp.filter((_,i)=>S.done[k+i]).length;tot+=n;dn+=d;
+  return `<details class="card" data-k="${k}" ${S.op[k]?'open':''} ontoggle="S.op[this.dataset.k]=this.open;save()"><summary><b>${x.code}</b> ${x.name}<span class="tag">${x.cr} cr</span><div class="bar"><i style="width:${d/n*100}%"></i></div><small class="mute">${d} of ${n} topics done</small></summary>${x.tp.map((t,i)=>`<label class="chk" style="font-weight:400"><input type="checkbox" style="display:inline;width:auto" data-k="${k+i}" ${S.done[k+i]?'checked':''} onchange="tg(this.dataset.k,this.checked)">${t}</label>`).join('')}</details>`}).join('');
+ return `<div class="card hero">Term progress<b class="gpa">${tot?Math.round(dn/tot*100):0}%</b><div class="bar"><i style="width:${tot?dn/tot*100:0}%"></i></div></div>`+h}
+
+function vGpa(){let p=0,n=0,tc=0;
+ const rows=cs().map(x=>{const k=K(x),g=S.gr[k];
+  if(x.ng)return `<div class="row"><span><b>${x.code}</b> ${x.name}<small class="mute"> · ${x.cr} cr</small></span><span class="tag">not in GPA</span></div>`;
+  tc+=x.cr;if(g!==undefined&&g!==''){p+=x.cr*+g;n+=x.cr}
+  return `<div class="row"><span><b>${x.code}</b> ${x.name}<small class="mute"> · ${x.cr} cr</small></span><select data-k="${k}" onchange="S.gr[this.dataset.k]=this.value;save();render()"><option value="">Grade</option>${G.map(g=>`<option value="${g[1]}" ${String(S.gr[k])==String(g[1])?'selected':''}>${g[0]} · ${g[1].toFixed(2)}</option>`).join('')}</select></div>`}).join('');
+ return `<div class="card hero">Estimated term GPA<b class="gpa">${n?(p/n).toFixed(2):'–'}</b><small class="mute">${n} of ${tc} graded credits selected</small></div><div class="card">${rows}</div>`}
+
+function vTgt(){const c=cs().filter(x=>!x.ng);
+ return `<div class="card"><label>Target term GPA<input type="number" step="0.01" min="0" max="4" value="${S.tg}" oninput="S.tg=+this.value;save();plan()"></label><small class="mute">Mark each course as strong, average or weak. You will see the minimum grade you can settle for.</small></div><div class="card">${c.map(x=>`<div class="row"><span><b>${x.code}</b> ${x.name}<small class="mute"> · ${x.cr} cr</small></span><select data-k="${K(x)}" onchange="S.st[this.dataset.k]=this.value;save();plan()">${[['S','Strong'],['A','Average'],['W','Weak']].map(o=>`<option value="${o[0]}" ${(S.st[K(x)]||'A')==o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>`).join('')}</div><div id="out"></div>`}
+
+function plan(){const c=cs().filter(x=>!x.ng),C=c.reduce((a,x)=>a+x.cr,0),P=S.tg*C,cap={S:4,A:3.75,W:3.5},st=x=>S.st[K(x)]||'A',o=$('#out');
+ const mx=c.reduce((a,x)=>a+x.cr*cap[st(x)],0);
+ if(mx<P-1e-9){o.innerHTML=`<div class="card bad">With these strengths the best you can reach is about <b>${(mx/C).toFixed(2)}</b>. Raise the weak courses or lower the target.</div>`;return}
+ let sl=mx-P;const r={};
+ [...c].sort((a,b)=>'WAS'.indexOf(st(a))-'WAS'.indexOf(st(b))||a.cr-b.cr).forEach(x=>{let g=cap[st(x)];while(g>2.5&&x.cr*.25<=sl+1e-9){g-=.25;sl-=x.cr*.25}r[K(x)]=g});
+ const tot=c.reduce((a,x)=>a+x.cr*r[K(x)],0)/C;
+ o.innerHTML=`<div class="card hero">Minimum plan gives <b>${tot.toFixed(2)}</b></div>`+c.map(x=>{const g=r[K(x)],s=st(x),top=g>=cap[s]-.01,cls=!top?'ok':s=='W'?'bad':'warn';
+  return `<div class="card row ${cls}"><span><b>${x.code}</b><small class="mute"> · ${x.cr} cr</small><br><small>${!top?'Can slip a little':s=='W'?'Weak, but must hold':'Must hold'} · each grade lower costs −${(x.cr*.25/C).toFixed(2)} GPA</small></span><b class="big">≥ ${gname(g)}</b></div>`}).join('')}
+
+function vMk(){const t=cs().filter(x=>x.ty=='T'),x=t.find(y=>K(y)==S.mc)||t[0],k=K(x),n=x.cr;
+ return `<div class="card"><label>Course<select onchange="S.mc=this.value;save();render()">${t.map(y=>`<option value="${K(y)}" ${K(y)==k?'selected':''}>${y.code} · ${y.name}</option>`).join('')}</select></label>
+<small class="mute">${n*100} marks: attendance ${n*10} · CT ${n*20} (${n+1} CTs of 20, best ${n} count) · term final ${n*70}</small></div>
+<div class="card"><label>Attendance %<input type="number" min="0" max="100" data-k="${k}" value="${S.at[k]??''}" oninput="S.at[this.dataset.k]=this.value;save();calcM()"></label>
+<b>CT marks (out of 20)</b><div class="cts" style="margin-top:8px">${Array.from({length:n+1},(_,i)=>`<input type="number" min="0" max="20" placeholder="CT ${i+1}" data-k="${k}#${i}" value="${S.ct[k+'#'+i]??''}" oninput="S.ct[this.dataset.k]=this.value;save();calcM()">`).join('')}</div></div><div id="mo"></div>`}
+
+function calcM(){const t=cs().filter(x=>x.ty=='T'),x=t.find(y=>K(y)==S.mc)||t[0],k=K(x),n=x.cr,a=S.at[k],ap=a===undefined||a===''?null:+a;
+ const pts=ap==null?0:ap>=90?10:ap>=85?9:ap>=80?8:ap>=75?7:ap>=70?6:ap>=65?5:ap>=60?4:0,att=pts*n;
+ const cts=Array.from({length:n+1},(_,i)=>S.ct[k+'#'+i]).filter(v=>v!==undefined&&v!=='').map(v=>Math.min(20,Math.max(0,+v))).sort((p,q)=>q-p);
+ const ct=cts.slice(0,n).reduce((p,q)=>p+q,0),fm=70*n;
+ const rows=G.slice(0,9).map(g=>{const f=g[2]*n-att-ct,p=f/fm*100,cl=f<=0?'ok':f>fm?'bad':p<=60?'ok':p<=80?'warn':'bad';
+  return `<tr><td><b>${g[0]}</b> <small class="mute">${g[1].toFixed(2)}</small></td><td>${g[2]*n}</td><td class="${cl}">${f<=0?'Already secured':f>fm?'Not reachable':Math.ceil(f)+' / '+fm+' ('+Math.ceil(p)+'%)'}</td></tr>`}).join('');
+ $('#mo').innerHTML=`<div class="card"><div class="row"><span>Attendance marks</span><b>${att} / ${n*10}</b></div><div class="row"><span>Best CTs (${cts.length} entered)</span><b>${ct} / ${n*20}</b></div>${ap!=null&&ap<60?'<p class="bad" style="padding:8px;border-radius:8px;margin:8px 0 0">Below 60% attendance: you may not be allowed to sit the final.</p>':''}</div><div class="card"><table><tr><th>Grade</th><th>Total needed</th><th>Final needed</th></tr>${rows}</table><small class="mute">Final needed = grade cut-off − attendance − best CTs. Update as you take more CTs.</small></div>`}
+
+function render(){const c=cs(),cr=c.reduce((a,x)=>a+x.cr,0),tabs=[['syl','Syllabus'],['gpa','GPA'],['tgt','Target'],['mk','Marks']];
+ $('#app').innerHTML=`<header><h1>IPE Study Planner</h1><p class="mute">BUET · Industrial &amp; Production Engineering</p></header>
+<section class="card pick"><div class="seg">${[1,2,3,4].map(i=>`<button class="${S.lv==i?'on':''}" onclick="go('lv',${i})">Level ${i}</button>`).join('')}</div><div class="seg">${[1,2].map(i=>`<button class="${S.tm==i?'on':''}" onclick="go('tm',${i})">Term ${i==1?'I':'II'}</button>`).join('')}</div><small class="mute">${c.length} courses · ${cr} credits</small></section>
+<nav class="tabs">${tabs.map(t=>`<button class="${S.tab==t[0]?'on':''}" onclick="go('tab','${t[0]}')">${t[1]}</button>`).join('')}</nav>
+<main>${({syl:vSyl,gpa:vGpa,tgt:vTgt,mk:vMk})[S.tab]()}</main>
+<footer>Based on the IPE BUET Undergraduate Curriculum, 6th Edition (2022). BUET’s central rules and department circulars always prevail. Progress is saved in this browser only.</footer>`;
+ if(S.tab=='tgt')plan();if(S.tab=='mk')calcM()}
+render();
+</script></body></html>
