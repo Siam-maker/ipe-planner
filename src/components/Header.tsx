@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RotateCcw, AlertTriangle, X } from 'lucide-react';
 import { AppState } from '../types';
+import ipeLogo from '../assets/ipe-logo.png';
 
 interface HeaderProps {
   state: AppState;
@@ -18,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({ state, onResetTerm, onResetAll }
         <div className="flex items-center gap-3 min-w-0">
           <div className="p-1 bg-white rounded-2xl border border-slate-200/90 shadow-xs shrink-0 flex items-center justify-center">
             <img
-              src="/assets/aistudio/Screenshot_2026-10-26_123419_4d074acd.png"
+              src={ipeLogo}
               alt="IPE BUET"
               className="w-11 h-11 sm:w-12 sm:h-12 object-contain rounded-xl"
             />

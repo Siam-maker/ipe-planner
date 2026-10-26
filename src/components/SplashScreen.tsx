@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import ipeLogo from '../assets/ipe-logo.png';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -46,7 +47,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             {/* IPE BUET Logo */}
             <div className="relative mb-5 p-2.5 bg-white rounded-3xl shadow-lg border border-slate-200/80">
               <img
-                src="/assets/aistudio/Screenshot_2026-10-26_123419_4d074acd.png"
+                src={ipeLogo}
                 alt="IPE BUET"
                 className="w-28 sm:w-32 h-auto object-contain rounded-2xl"
               />
