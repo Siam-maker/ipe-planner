@@ -317,6 +317,9 @@ export default function App() {
         {/* Creator footer credit only on home page (Syllabus tab) */}
         {state.activeTab === 'syllabus' && <Footer />}
       </div>
+
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }
