@@ -12,6 +12,7 @@ import { TargetPlannerView } from './components/TargetPlannerView';
 import { Footer } from './components/Footer';
 import { SplashScreen } from './components/SplashScreen';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export default function App() {
   const [state, setState] = useState<AppState>(() => loadAppState());
@@ -318,8 +319,9 @@ export default function App() {
         {state.activeTab === 'syllabus' && <Footer />}
       </div>
 
-      {/* Vercel Analytics */}
+      {/* Vercel Analytics & Speed Insights */}
       <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
