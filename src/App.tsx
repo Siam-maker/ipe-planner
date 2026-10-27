@@ -11,6 +11,7 @@ import { GpaCalculatorView } from './components/GpaCalculatorView';
 import { TargetPlannerView } from './components/TargetPlannerView';
 import { Footer } from './components/Footer';
 import { SplashScreen } from './components/SplashScreen';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [state, setState] = useState<AppState>(() => loadAppState());
