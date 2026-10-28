@@ -6,12 +6,16 @@ import {
   Sun,
   AlertTriangle,
   Check,
+  CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 import { AppState } from '../types';
+import { STUDENT_AVATARS, getAvatarById, AvatarGraphic } from '../data/avatars';
 
 interface SettingsViewProps {
   state: AppState;
   onUpdateStudentName: (name: string) => void;
+  onUpdateStudentAvatar: (avatarId: string) => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   onResetTerm: () => void;
@@ -21,13 +25,17 @@ interface SettingsViewProps {
 export const SettingsView: React.FC<SettingsViewProps> = ({
   state,
   onUpdateStudentName,
+  onUpdateStudentAvatar,
   isDarkMode,
   onToggleDarkMode,
   onResetTerm,
   onResetAll,
 }) => {
-  const [nameInput, setNameInput] = useState(state.studentName || 'Altaf Hossain');
+  const [nameInput, setNameInput] = useState(state.studentName || 'Adam');
+  const [selectedAvatarId, setSelectedAvatarId] = useState(state.studentAvatar || 'boy-adam');
+  const [avatarFilter, setAvatarFilter] = useState<'all' | 'male' | 'female'>('all');
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [avatarSuccess, setAvatarSuccess] = useState(false);
   const [confirmModal, setConfirmModal] = useState<false | 'term' | 'all'>(false);
 
   const handleSaveName = (e: React.FormEvent) => {
@@ -39,54 +47,82 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     }
   };
 
-  const initials = (nameInput || 'AH')
-    .split(' ')
-    .filter(Boolean)
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase() || 'AH';
+  const handleSelectAvatar = (avatarId: string) => {
+    setSelectedAvatarId(avatarId);
+    onUpdateStudentAvatar(avatarId);
+    setAvatarSuccess(true);
+    setTimeout(() => setAvatarSuccess(false), 1800);
+  };
+
+  const filteredAvatars = STUDENT_AVATARS.filter((a) => {
+    if (avatarFilter === 'all') return true;
+    return a.gender === avatarFilter;
+  });
+
+  const currentAvatar = getAvatarById(selectedAvatarId);
 
   return (
-    <div className="space-y-6 pb-20 max-w-2xl mx-auto min-w-0">
+    <div className="space-y-6 pb-20 max-w-3xl mx-auto min-w-0">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2.5">
           <Settings className="w-5 h-5 text-[#C65D3B]" />
           <span>Settings &amp; Profile</span>
         </h2>
         <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A199] mt-1">
-          Customize your student name, theme appearance, and academic data.
+          Customize your student identity, choose a personalized avatar, and manage study preferences.
         </p>
       </div>
 
-      {/* Student Profile Card */}
-      <div className="bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E8E2D9] dark:border-[#2E2924] rounded-2xl p-4 sm:p-5 shadow-2xs space-y-4">
-        <h3 className="text-sm font-bold text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2">
-          <User className="w-4 h-4 text-[#C65D3B]" />
-          Student Profile
-        </h3>
+      {/* Student Profile & Avatar Hero Card */}
+      <div className="bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E8E2D9] dark:border-[#2E2924] rounded-2xl p-4 sm:p-6 shadow-2xs space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b border-[#EFE9DF] dark:border-[#2E2924]">
+          <h3 className="text-sm font-bold text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2">
+            <User className="w-4 h-4 text-[#C65D3B]" />
+            Student Identity
+          </h3>
+          {avatarSuccess && (
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-[#5B6B4E] dark:text-[#8FA67C] animate-in fade-in">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Avatar Updated
+            </span>
+          )}
+        </div>
 
-        <form onSubmit={handleSaveName} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#C65D3B] text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-2xs">
-            {initials}
+        {/* Current Identity Showcase & Name Form */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 bg-[#F2EEE6] dark:bg-[#1C1A18] p-4 rounded-2xl border border-[#E8E2D9] dark:border-[#2E2924]">
+          <div className="relative shrink-0">
+            <AvatarGraphic
+              avatarId={selectedAvatarId}
+              name={nameInput}
+              size={68}
+              className="w-16 h-16 sm:w-17 sm:h-17 ring-2 ring-[#C65D3B] dark:ring-[#C65D3B] shadow-sm"
+            />
+            <span className="absolute -bottom-1 -right-1 bg-[#C65D3B] text-white p-1 rounded-full text-[10px] shadow-xs">
+              <Sparkles className="w-2.5 h-2.5" />
+            </span>
           </div>
 
-          <div className="flex-1 w-full space-y-1.5 min-w-0">
-            <label htmlFor="student-name-input" className="text-xs font-semibold text-[#6E655F] dark:text-[#A8A199]">
-              Display Name
-            </label>
+          <form onSubmit={handleSaveName} className="flex-1 w-full space-y-2 min-w-0">
+            <div className="flex items-center justify-between">
+              <label htmlFor="student-name-input" className="text-xs font-semibold text-[#6E655F] dark:text-[#A8A199]">
+                Display Name (নাম)
+              </label>
+              <span className="text-[11px] text-[#6E655F] dark:text-[#A8A199]">
+                Current: <strong className="text-[#2B2622] dark:text-white font-serif">{nameInput}</strong>
+              </span>
+            </div>
+            
             <div className="flex gap-2">
               <input
                 id="student-name-input"
                 type="text"
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
-                placeholder="e.g. Altaf Hossain"
-                className="flex-1 min-w-0 bg-[#F2EEE6] dark:bg-[#1C1A18] text-[#2B2622] dark:text-[#EDE8E1] text-xs sm:text-sm px-3.5 py-2 rounded-xl border border-[#E8E2D9] dark:border-[#38312B] focus:outline-hidden focus:ring-2 focus:ring-[#C65D3B]/20"
+                placeholder="e.g. Adam"
+                className="flex-1 min-w-0 bg-[#FAF6F0] dark:bg-[#282420] text-[#2B2622] dark:text-[#EDE8E1] text-xs sm:text-sm px-3.5 py-2 rounded-xl border border-[#E8E2D9] dark:border-[#38312B] focus:outline-hidden focus:ring-2 focus:ring-[#C65D3B]/25"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#C65D3B] hover:bg-[#B34E2D] active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-2xs transition-all shrink-0 flex items-center gap-1 cursor-pointer"
+                className="px-4 py-2 bg-[#C65D3B] hover:bg-[#B34E2D] active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-2xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
               >
                 {savedSuccess ? (
                   <>
@@ -94,15 +130,106 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     <span>Saved</span>
                   </>
                 ) : (
-                  <span>Save</span>
+                  <span>Save Name</span>
                 )}
               </button>
             </div>
             <p className="text-[11px] text-[#6E655F] dark:text-[#A8A199]">
-              Shown in greeting and top bar profile.
+              Appears on your dashboard greeting, term analytics, and top navigation.
             </p>
+          </form>
+        </div>
+
+        {/* AVATAR PICKER SECTION (ছেলে ও মেয়েদের অবতার) */}
+        <div className="space-y-3 pt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#2B2622] dark:text-[#EDE8E1]">
+                Choose Character Avatar (অবতার নির্বাচন করুন)
+              </h4>
+              <p className="text-[11px] text-[#6E655F] dark:text-[#A8A199]">
+                Select from {STUDENT_AVATARS.length} handcrafted male &amp; female academic avatars.
+              </p>
+            </div>
+
+            {/* Filter Tabs: All / Boys / Girls */}
+            <div className="flex items-center gap-1 bg-[#EBE4D8] dark:bg-[#1C1A18] p-1 rounded-xl self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setAvatarFilter('all')}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  avatarFilter === 'all'
+                    ? 'bg-[#C65D3B] text-white shadow-2xs'
+                    : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
+                }`}
+              >
+                All ({STUDENT_AVATARS.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setAvatarFilter('male')}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  avatarFilter === 'male'
+                    ? 'bg-[#C65D3B] text-white shadow-2xs'
+                    : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
+                }`}
+              >
+                Boys (ছেলে)
+              </button>
+              <button
+                type="button"
+                onClick={() => setAvatarFilter('female')}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  avatarFilter === 'female'
+                    ? 'bg-[#C65D3B] text-white shadow-2xs'
+                    : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
+                }`}
+              >
+                Girls (মেয়ে)
+              </button>
+            </div>
           </div>
-        </form>
+
+          {/* Grid of Avatars */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 sm:gap-3 pt-1">
+            {filteredAvatars.map((av) => {
+              const isSelected = selectedAvatarId === av.id;
+              return (
+                <button
+                  key={av.id}
+                  type="button"
+                  onClick={() => handleSelectAvatar(av.id)}
+                  className={`group relative flex flex-col items-center text-center p-2.5 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#FAF6F0] dark:bg-[#2B2420] border-[#C65D3B] ring-2 ring-[#C65D3B]/40 shadow-sm scale-[1.03]'
+                      : 'bg-[#F2EEE6] dark:bg-[#1C1A18] border-[#E8E2D9] dark:border-[#2E2924] hover:bg-[#EBE4D8] dark:hover:bg-[#28221D] hover:border-[#DCD3C5]'
+                  }`}
+                >
+                  <div className="relative mb-1.5">
+                    <AvatarGraphic
+                      avatarId={av.id}
+                      name={av.name}
+                      size={52}
+                      className="w-13 h-13 rounded-full shadow-2xs transition-transform group-hover:scale-105"
+                    />
+                    {isSelected && (
+                      <span className="absolute -top-1 -right-1 bg-[#C65D3B] text-white rounded-full p-0.5 shadow-xs">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="text-xs font-bold text-[#2B2622] dark:text-[#EDE8E1] truncate w-full leading-tight">
+                    {av.name}
+                  </span>
+                  <span className="text-[10px] text-[#6E655F] dark:text-[#A8A199] truncate w-full leading-tight mt-0.5 font-medium">
+                    {av.nameBn.split(' ')[0]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Theme Picker */}
@@ -127,7 +254,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             }`}
           >
             <Sun className="w-4 h-4 text-[#E8B04A]" />
-            <span>Light Theme</span>
+            <span>Warm Light (Paper)</span>
           </button>
 
           <button
@@ -142,7 +269,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             }`}
           >
             <Moon className="w-4 h-4 text-[#E28364]" />
-            <span>Dark Theme</span>
+            <span>Warm Dark (Espresso)</span>
           </button>
         </div>
       </div>

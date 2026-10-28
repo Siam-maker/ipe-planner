@@ -128,6 +128,10 @@ export default function App() {
     setState((prev) => ({ ...prev, studentName: name }));
   }, []);
 
+  const handleUpdateStudentAvatar = useCallback((avatarId: string) => {
+    setState((prev) => ({ ...prev, studentAvatar: avatarId }));
+  }, []);
+
   // Syllabus handlers
   const handleToggleTopic = useCallback((topicKey: string) => {
     setState((prev) => ({
@@ -303,7 +307,8 @@ export default function App() {
         topicProgressPct={topicProgressPct}
         isDarkMode={Boolean(state.isDarkMode)}
         onToggleDarkMode={handleToggleDarkMode}
-        studentName={state.studentName || 'Altaf Hossain'}
+        studentName={state.studentName || 'Adam'}
+        studentAvatar={state.studentAvatar || 'boy-adam'}
         courses={currentCourses}
         level={state.level}
         term={state.term}
@@ -326,7 +331,8 @@ export default function App() {
               doneTopics={state.doneTopics}
               onSelectTab={handleSelectTab}
               onSelectCourse={handleSelectCourse}
-              studentName={state.studentName || 'Altaf Hossain'}
+              studentName={state.studentName || 'Adam'}
+              studentAvatar={state.studentAvatar || 'boy-adam'}
             />
           )}
 

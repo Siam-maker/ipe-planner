@@ -21,6 +21,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Course, TabKey } from '../types';
+import { AvatarGraphic } from '../data/avatars';
 import ipeLogo from '../assets/ipe-logo.png';
 
 interface TopHeaderProps {
@@ -30,6 +31,7 @@ interface TopHeaderProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   studentName: string;
+  studentAvatar?: string;
   courses: Course[];
   level: number;
   term: number;
@@ -46,6 +48,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   isDarkMode,
   onToggleDarkMode,
   studentName,
+  studentAvatar = 'boy-adam',
   courses,
   level,
   term,
@@ -352,20 +355,27 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             <button
               type="button"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-1 p-0.5 sm:p-1 rounded-full hover:bg-[#EBE4D8] dark:hover:bg-[#2B2622] transition-colors cursor-pointer"
+              className="flex items-center gap-1 p-0.5 rounded-full hover:ring-2 hover:ring-[#C65D3B]/40 transition-all cursor-pointer"
               aria-label="User Profile"
+              title={`${studentName} · Click to customize avatar & settings`}
             >
-              <div className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full bg-[#C65D3B] text-white text-[11px] sm:text-xs font-bold flex items-center justify-center shrink-0 shadow-xs">
-                {initials}
-              </div>
+              <AvatarGraphic
+                avatarId={studentAvatar}
+                name={studentName}
+                size={30}
+                className="w-7 h-7 sm:w-7.5 sm:h-7.5 ring-1 ring-[#DCD3C5] dark:ring-[#453D36] shadow-xs"
+              />
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-[#FAF6F0] dark:bg-[#24201D] rounded-2xl shadow-2xl border border-[#E2DACF] dark:border-[#3E3732] p-3 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <div className="flex items-center gap-2.5 pb-2.5 border-b border-[#E2DACF] dark:border-[#3E3732]">
-                  <div className="w-8 h-8 rounded-full bg-[#C65D3B] text-white text-xs font-bold flex items-center justify-center shrink-0">
-                    {initials}
-                  </div>
+              <div className="absolute right-0 mt-2 w-60 bg-[#FAF6F0] dark:bg-[#24201D] rounded-2xl shadow-2xl border border-[#E2DACF] dark:border-[#3E3732] p-3.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="flex items-center gap-3 pb-3 border-b border-[#E2DACF] dark:border-[#3E3732]">
+                  <AvatarGraphic
+                    avatarId={studentAvatar}
+                    name={studentName}
+                    size={38}
+                    className="w-9.5 h-9.5 ring-1 ring-[#DCD3C5] dark:ring-[#453D36] shadow-xs shrink-0"
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="text-xs font-bold text-[#2B2622] dark:text-[#F5F1EA] truncate">
                       {studentName}
@@ -377,6 +387,18 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                 </div>
 
                 <div className="pt-2 space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelectTab('settings');
+                      setIsProfileOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-[#C65D3B] dark:text-[#E8B04A] hover:bg-[#EBE4D8] dark:hover:bg-[#2E2824] rounded-xl transition-colors cursor-pointer"
+                  >
+                    <User className="w-3.5 h-3.5 shrink-0" />
+                    <span>Change Avatar &amp; Name</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => {

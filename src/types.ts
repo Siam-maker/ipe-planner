@@ -48,6 +48,7 @@ export interface AppState {
   targetGpa: number;
   selectedMarksCourse: string; // Course key
   studentName?: string;
+  studentAvatar?: string;
   isDarkMode?: boolean;
   notes?: Record<string, string>; // Course notes: key = courseCode
   // Topic completions: key = "level-term|code#topicIndex" -> boolean

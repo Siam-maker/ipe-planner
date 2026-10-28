@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Course, TabKey } from '../types';
 import { getTopicKey } from '../data/curriculum';
+import { AvatarGraphic } from '../data/avatars';
 import { Footer } from './Footer';
 
 interface DashboardViewProps {
@@ -28,6 +29,7 @@ interface DashboardViewProps {
   onSelectTab: (tab: TabKey) => void;
   onSelectCourse: (courseCode: string) => void;
   studentName: string;
+  studentAvatar?: string;
 }
 
 // Icon mapper for courses with cohesive earthy editorial color grading
@@ -65,6 +67,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onSelectTab,
   onSelectCourse,
   studentName,
+  studentAvatar = 'boy-adam',
 }) => {
   // Time-aware greeting
   const greeting = useMemo(() => {
@@ -130,19 +133,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-5 sm:space-y-6 min-w-0">
-      {/* Top Greeting */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2">
-            <span>{greeting}, {studentName.split(' ')[0]}!</span>
-            <span className="text-xl sm:text-2xl" role="img" aria-label="Waving hand">👋</span>
-          </h2>
-          <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5">
-            Keep going! You&rsquo;re making steady academic progress.
-          </p>
+      {/* Top Greeting with Student Avatar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <AvatarGraphic
+            avatarId={studentAvatar}
+            name={studentName}
+            size={48}
+            className="w-12 h-12 ring-2 ring-[#E2DACF] dark:ring-[#3E3832] shadow-2xs shrink-0"
+          />
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2 truncate">
+              <span className="truncate">{greeting}, {studentName.split(' ')[0]}!</span>
+              <span className="text-xl sm:text-2xl shrink-0" role="img" aria-label="Waving hand">👋</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5 truncate">
+              Keep going! You&rsquo;re making steady academic progress.
+            </p>
+          </div>
         </div>
 
-        <div className="self-start sm:self-auto">
+        <div className="self-start sm:self-auto shrink-0">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#EBE4D8] dark:bg-[#2B2622] text-[#C65D3B] dark:text-[#E8B04A] border border-[#DCD3C5] dark:border-[#3E3832] font-mono shadow-2xs">
             Level {level}, Term {term === 1 ? 'I' : 'II'}
           </span>

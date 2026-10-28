@@ -130,7 +130,8 @@ test('normalizeState migrates existing tabs and preserves saved progress safely'
   assert.equal(state.level, 2);
   assert.equal(state.term, 1);
   assert.equal(state.activeTab, 'gpa');
-  assert.equal(state.studentName, 'Altaf Hossain');
+  assert.equal(state.studentName, 'Adam');
+  assert.equal(state.studentAvatar, 'boy-adam');
   assert.equal(state.doneTopics['2-1|IPE 205#0'], true);
 });
 
