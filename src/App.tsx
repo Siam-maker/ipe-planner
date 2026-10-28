@@ -2,14 +2,17 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AppState, TabKey, Course, AttendanceInputMode, CourseStrength } from './types';
 import { getCoursesForTerm, getCourseKey, getTopicKey } from './data/curriculum';
 import { loadAppState, saveAppState, INITIAL_STATE } from './utils/storage';
-import { Header } from './components/Header';
-import { Navbar } from './components/Navbar';
-import { LevelTermSelector } from './components/LevelTermSelector';
+import { TopHeader } from './components/TopHeader';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { DashboardView } from './components/DashboardView';
+import { CoursesView } from './components/CoursesView';
+import { CourseDetailModal } from './components/CourseDetailModal';
 import { SyllabusView } from './components/SyllabusView';
 import { MarksCalculatorView } from './components/MarksCalculatorView';
 import { GpaCalculatorView } from './components/GpaCalculatorView';
 import { TargetPlannerView } from './components/TargetPlannerView';
-import { Footer } from './components/Footer';
+import { AcademicResourcesView } from './components/AcademicResourcesView';
+import { SettingsView } from './components/SettingsView';
 import { SplashScreen } from './components/SplashScreen';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -17,6 +20,27 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 export default function App() {
   const [state, setState] = useState<AppState>(() => loadAppState());
   const [showSplash, setShowSplash] = useState(true);
+  const [selectedCourseDetailCode, setSelectedCourseDetailCode] = useState<string | null>(null);
+
+  // Sync dark mode class on <html> element
+  useEffect(() => {
+    if (state.isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [state.isDarkMode]);
+
+  // Lock background scroll when course modal is open
+  useEffect(() => {
+    if (selectedCourseDetailCode) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [selectedCourseDetailCode]);
 
   // Auto-save state changes to localStorage
   useEffect(() => {
@@ -26,10 +50,6 @@ export default function App() {
   const currentCourses = useMemo(() => {
     return getCoursesForTerm(state.level, state.term);
   }, [state.level, state.term]);
-
-  const totalCredits = useMemo(() => {
-    return Math.round(currentCourses.reduce((sum, c) => sum + c.credits, 0) * 100) / 100;
-  }, [currentCourses]);
 
   // Overall topic progress percentage for current term
   const topicProgressPct = useMemo(() => {
@@ -45,9 +65,16 @@ export default function App() {
     return total > 0 ? Math.round((done / total) * 100) : 0;
   }, [currentCourses, state.level, state.term, state.doneTopics]);
 
+  // Selected course for detail modal
+  const selectedCourseDetail = useMemo(() => {
+    if (!selectedCourseDetailCode) return null;
+    return currentCourses.find((c) => c.code === selectedCourseDetailCode) || null;
+  }, [currentCourses, selectedCourseDetailCode]);
+
   // Navigation handlers
   const handleSelectTab = useCallback((tab: TabKey) => {
     setState((prev) => ({ ...prev, activeTab: tab }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const handleSelectLevel = useCallback((lvl: number) => {
@@ -66,6 +93,39 @@ export default function App() {
       const newSelected = firstTheory ? getCourseKey(prev.level, t, firstTheory.code) : '';
       return { ...prev, term: t, selectedMarksCourse: newSelected };
     });
+  }, []);
+
+  // Course inspection & notes
+  const handleSelectCourse = useCallback((courseCode: string) => {
+    setSelectedCourseDetailCode(courseCode);
+  }, []);
+
+  const handleSaveNotes = useCallback((courseCode: string, noteText: string) => {
+    setState((prev) => ({
+      ...prev,
+      notes: {
+        ...(prev.notes || {}),
+        [courseCode]: noteText,
+      },
+    }));
+  }, []);
+
+  const handleOpenMarksForCourse = useCallback((courseKey: string) => {
+    setState((prev) => ({
+      ...prev,
+      activeTab: 'marks',
+      selectedMarksCourse: courseKey,
+    }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // Theme & Profile
+  const handleToggleDarkMode = useCallback(() => {
+    setState((prev) => ({ ...prev, isDarkMode: !prev.isDarkMode }));
+  }, []);
+
+  const handleUpdateStudentName = useCallback((name: string) => {
+    setState((prev) => ({ ...prev, studentName: name }));
   }, []);
 
   // Syllabus handlers
@@ -229,37 +289,59 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
-      {/* Intro Splash Screen with IPE BUET Logo */}
+    <div className="min-h-screen bg-[#F5F1EA] dark:bg-[#191715] text-[#2B2622] dark:text-[#F5F1EA] flex flex-col transition-colors selection:bg-[#C65D3B] selection:text-white antialiased relative">
+      {/* Subtle tactile paper texture overlay */}
+      <div className="fixed inset-0 pointer-events-none paper-grain z-50 opacity-40 dark:opacity-20 select-none" aria-hidden="true" />
+
+      {/* Intro Splash Screen */}
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
 
-      <div className="max-w-3xl lg:max-w-4xl mx-auto px-3.5 sm:px-6 pt-4 pb-12">
-        {/* Header Branding & Quick Tools */}
-        <Header
-          state={state}
-          onResetTerm={handleResetTerm}
-          onResetAll={handleResetAll}
-        />
+      {/* Top Header with full navigation, live search, theme toggle, session switcher, and student profile */}
+      <TopHeader
+        activeTab={state.activeTab}
+        onSelectTab={handleSelectTab}
+        topicProgressPct={topicProgressPct}
+        isDarkMode={Boolean(state.isDarkMode)}
+        onToggleDarkMode={handleToggleDarkMode}
+        studentName={state.studentName || 'Altaf Hossain'}
+        courses={currentCourses}
+        level={state.level}
+        term={state.term}
+        onSelectLevel={handleSelectLevel}
+        onSelectTerm={handleSelectTerm}
+        onSelectCourse={handleSelectCourse}
+        onResetTerm={handleResetTerm}
+      />
 
-        {/* Level and Term Switcher */}
-        <LevelTermSelector
-          level={state.level}
-          term={state.term}
-          onSelectLevel={handleSelectLevel}
-          onSelectTerm={handleSelectTerm}
-          courseCount={currentCourses.length}
-          totalCredits={totalCredits}
-        />
+      {/* Dynamic Page Content Viewport */}
+      <main
+        key={state.activeTab}
+        className="flex-1 px-3.5 sm:px-6 lg:px-8 py-5 sm:py-7 max-w-7xl w-full mx-auto min-w-0 pb-24 sm:pb-28 md:pb-32 animate-view-fade"
+      >
+          {state.activeTab === 'dashboard' && (
+            <DashboardView
+              level={state.level}
+              term={state.term}
+              courses={currentCourses}
+              doneTopics={state.doneTopics}
+              onSelectTab={handleSelectTab}
+              onSelectCourse={handleSelectCourse}
+              studentName={state.studentName || 'Altaf Hossain'}
+            />
+          )}
 
-        {/* Navigation Bar (Top on desktop, sticky bottom on mobile) */}
-        <Navbar
-          activeTab={state.activeTab}
-          onSelectTab={handleSelectTab}
-          topicProgressPct={topicProgressPct}
-        />
+          {state.activeTab === 'courses' && (
+            <CoursesView
+              level={state.level}
+              term={state.term}
+              courses={currentCourses}
+              doneTopics={state.doneTopics}
+              onSelectCourse={handleSelectCourse}
+              onOpenMarksForCourse={handleOpenMarksForCourse}
+              onSelectTab={handleSelectTab}
+            />
+          )}
 
-        {/* Active Tab View: Instant, smooth tab rendering without screen on/off blanking */}
-        <main className="relative">
           {state.activeTab === 'syllabus' && (
             <SyllabusView
               level={state.level}
@@ -313,13 +395,48 @@ export default function App() {
               onSetStrength={handleSetStrength}
             />
           )}
+
+          {state.activeTab === 'resources' && <AcademicResourcesView />}
+
+          {state.activeTab === 'settings' && (
+            <SettingsView
+              state={state}
+              onUpdateStudentName={handleUpdateStudentName}
+              isDarkMode={Boolean(state.isDarkMode)}
+              onToggleDarkMode={handleToggleDarkMode}
+              onResetTerm={handleResetTerm}
+              onResetAll={handleResetAll}
+            />
+          )}
         </main>
 
-        {/* Creator footer credit only on home page (Syllabus tab) */}
-        {state.activeTab === 'syllabus' && <Footer />}
-      </div>
+        {/* Course Detail Modal */}
+      {selectedCourseDetail && (
+        <CourseDetailModal
+          course={selectedCourseDetail}
+          level={state.level}
+          term={state.term}
+          onClose={() => setSelectedCourseDetailCode(null)}
+          doneTopics={state.doneTopics}
+          onToggleTopic={handleToggleTopic}
+          onSetAllTopicsForCourse={handleSetAllTopicsForCourse}
+          notes={state.notes || {}}
+          onSaveNotes={handleSaveNotes}
+          onOpenMarksCalculator={(courseCode) => {
+            const k = getCourseKey(state.level, state.term, courseCode);
+            handleOpenMarksForCourse(k);
+          }}
+        />
+      )}
 
-      {/* Vercel Analytics & Speed Insights */}
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav
+        activeTab={state.activeTab}
+        onSelectTab={handleSelectTab}
+        topicProgressPct={topicProgressPct}
+      />
+
+      {/* Analytics */}
       <Analytics />
       <SpeedInsights />
     </div>

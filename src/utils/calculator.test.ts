@@ -7,6 +7,7 @@ import {
   calculateGpa,
   calculateTargetPlan,
 } from './calculator';
+import { normalizeState, parseBackupJson } from './storage';
 import { Course } from '../types';
 
 test('calculateAttendance with percentage mode: 92% gives full marks (10 pts/cr)', () => {
@@ -118,3 +119,35 @@ test('calculateTargetPlan recommends minimum grades for target GPA', () => {
   assert.equal(plan.achievable, true);
   assert.ok(plan.projectedGpa >= 3.8);
 });
+
+test('normalizeState migrates existing tabs and preserves saved progress safely', () => {
+  const state = normalizeState({
+    level: 2,
+    term: 1,
+    activeTab: 'gpa',
+    doneTopics: { '2-1|IPE 205#0': true },
+  });
+  assert.equal(state.level, 2);
+  assert.equal(state.term, 1);
+  assert.equal(state.activeTab, 'gpa');
+  assert.equal(state.studentName, 'Altaf Hossain');
+  assert.equal(state.doneTopics['2-1|IPE 205#0'], true);
+});
+
+test('parseBackupJson validates and parses both v2 and legacy backup JSON', () => {
+  const validV2 = JSON.stringify({
+    level: 3,
+    term: 2,
+    targetGpa: 3.75,
+    doneTopics: { '3-2|IPE 301#0': true },
+  });
+  const parsed = parseBackupJson(validV2);
+  assert.ok(parsed);
+  assert.equal(parsed.level, 3);
+  assert.equal(parsed.term, 2);
+  assert.equal(parsed.doneTopics['3-2|IPE 301#0'], true);
+
+  const invalid = parseBackupJson('not json');
+  assert.equal(invalid, null);
+});
+

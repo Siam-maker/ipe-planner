@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import {
   CheckCircle2,
   Circle,
@@ -10,6 +9,7 @@ import {
   BookOpen,
   FlaskConical,
   Sparkles,
+  BookOpenCheck,
 } from 'lucide-react';
 import { Course } from '../types';
 import { getCourseKey, getTopicKey } from '../data/curriculum';
@@ -114,80 +114,84 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   const visibleCourses = coursesWithStats.filter((c) => c.matches);
 
   return (
-    <div className="space-y-4">
-      {/* Term Progress Hero Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-850 to-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-md border border-indigo-800/40"
-      >
+    <div className="space-y-5 pb-12">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2">
+          <BookOpenCheck className="w-6 h-6 text-[#C65D3B] dark:text-[#D96D4B]" />
+          <span>Syllabus Progress Tracker</span>
+        </h2>
+        <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5">
+          Track official syllabus modules and topics covered for Level {level} Term {term}.
+        </p>
+      </div>
+
+      {/* Term Progress Hero Banner with Warm Editorial Palette */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#2D2622] via-[#241F1C] to-[#1C1816] text-[#F5F1EA] rounded-3xl p-5 sm:p-6 shadow-md border border-[#483E36]">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-xs font-semibold tracking-wider uppercase text-indigo-300">
-                Term Syllabus Completion
+              <span className="text-xs font-bold tracking-wider uppercase text-[#E8B04A] font-mono">
+                Overall Syllabus Completion
               </span>
               {termStats.percentage === 100 && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                  <Sparkles className="w-3 h-3" /> All Done!
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-[#5B6B4E]/30 text-[#A3B899] px-2.5 py-0.5 rounded-full border border-[#5B6B4E]/50 font-mono">
+                  <Sparkles className="w-3 h-3 text-[#E8B04A]" /> All Done!
                 </span>
               )}
             </div>
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl sm:text-5xl font-black tracking-tight text-white font-mono">
+              <span className="text-4xl sm:text-5xl font-black tracking-tight text-[#F5F1EA] font-mono">
                 {termStats.percentage}%
               </span>
-              <span className="text-xs sm:text-sm text-indigo-200/90 font-medium">
+              <span className="text-xs sm:text-sm text-[#D8CEBF] font-medium">
                 {termStats.completedTopics} of {termStats.totalTopics} topics checked
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/10 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-white/10">
+          <div className="flex items-center gap-4 bg-white/5 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-white/10">
             <div className="text-right">
-              <div className="text-xs text-indigo-200">Completed Courses</div>
-              <div className="text-lg font-bold font-mono text-white">
+              <div className="text-xs text-[#D8CEBF]">Completed Courses</div>
+              <div className="text-lg font-bold font-mono text-[#F5F1EA]">
                 {termStats.completedSubjects} / {courses.length}
               </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-indigo-500/30 border border-indigo-400/40 flex items-center justify-center font-bold text-xs text-indigo-100">
+            <div className="w-10 h-10 rounded-full bg-[#C65D3B]/30 border border-[#C65D3B]/50 flex items-center justify-center font-bold text-xs text-[#E8B04A] font-mono">
               {courses.length > 0 ? Math.round((termStats.completedSubjects / courses.length) * 100) : 0}%
             </div>
           </div>
         </div>
 
-        {/* Smooth animated progress track */}
-        <div className="relative z-10 mt-4 w-full bg-slate-950/60 rounded-full h-3 overflow-hidden p-0.5">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${termStats.percentage}%` }}
-            transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-            className={`h-full rounded-full ${
+        {/* Animated Progress Track */}
+        <div className="relative z-10 mt-4 w-full bg-[#181513] rounded-full h-2.5 overflow-hidden p-0.5">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
               termStats.percentage === 100
-                ? 'bg-gradient-to-r from-emerald-400 to-teal-300'
-                : 'bg-gradient-to-r from-indigo-400 via-blue-400 to-emerald-400'
+                ? 'bg-gradient-to-r from-[#5B6B4E] to-[#758765]'
+                : 'bg-gradient-to-r from-[#C65D3B] via-[#E8B04A] to-[#5B6B4E]'
             }`}
+            style={{ width: `${termStats.percentage}%` }}
           />
         </div>
-      </motion.div>
+      </div>
 
       {/* Search & Filter Controls */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs space-y-2.5">
+      <div className="bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E2DACF] dark:border-[#38322D] rounded-2xl p-3 shadow-2xs space-y-2.5">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#8C827A] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search subject or topic (e.g. IPE 205, casting, matrix, calculus)..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            placeholder="Search topic or course (e.g. thermodynamics, matrix, calculus)..."
+            className="w-full pl-9 pr-4 py-2 bg-[#EBE4D8] dark:bg-[#282320] border border-[#DCD3C5] dark:border-[#3E3832] rounded-xl text-xs sm:text-sm text-[#2B2622] dark:text-[#F5F1EA] placeholder-[#8C827A] focus:outline-hidden focus:border-[#C65D3B] transition-all"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#8C827A] hover:text-[#2B2622] dark:hover:text-[#F5F1EA] cursor-pointer"
             >
               Clear
             </button>
@@ -209,10 +213,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 key={tab.id}
                 type="button"
                 onClick={() => setFilterType(tab.id as typeof filterType)}
-                className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors select-none ${
+                className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all select-none cursor-pointer ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900'
+                    ? 'bg-[#C65D3B] text-white shadow-xs'
+                    : 'bg-[#EBE4D8] dark:bg-[#2A2622] text-[#2B2622] dark:text-[#E2DACF] hover:bg-[#E2D8C9] dark:hover:bg-[#332E2A]'
                 }`}
               >
                 {tab.label}
@@ -222,32 +226,30 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* Individual Subjects List */}
+      {/* Individual Subjects Accordion List */}
       <div className="space-y-3">
         {visibleCourses.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl border border-slate-200/90 text-slate-500 p-6">
-            <BookOpen className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-700">No courses match your filter or search query</p>
-            <p className="text-xs text-slate-400 mt-1">Try searching a different keyword or resetting filters.</p>
+          <div className="text-center py-12 bg-[#FAF6F0] dark:bg-[#221F1C] rounded-2xl border border-[#E2DACF] dark:border-[#38322D] text-[#6E655F] dark:text-[#A8A098] p-6">
+            <BookOpen className="w-8 h-8 text-[#8C827A] mx-auto mb-2" />
+            <p className="text-sm font-semibold text-[#2B2622] dark:text-[#F5F1EA]">No courses match your filter or search query</p>
+            <p className="text-xs text-[#8C827A] mt-1">Try searching a different keyword or resetting filters.</p>
           </div>
         ) : (
           visibleCourses.map((item) => {
             const { course, key, isExpanded, total, done, pct, isComplete, isInProgress } = item;
 
             return (
-              <motion.div
+              <div
                 key={key}
-                layout
-                transition={{ duration: 0.2 }}
-                className={`bg-white border rounded-2xl overflow-hidden transition-shadow ${
+                className={`bg-[#FAF6F0] dark:bg-[#221F1C] border rounded-2xl overflow-hidden transition-all shadow-2xs ${
                   isComplete
-                    ? 'border-emerald-200/90 shadow-xs'
+                    ? 'border-[#5B6B4E]/50'
                     : isInProgress
-                    ? 'border-indigo-200/90 shadow-xs'
-                    : 'border-slate-200/90 shadow-2xs'
+                    ? 'border-[#C65D3B]/40'
+                    : 'border-[#E2DACF] dark:border-[#38322D]'
                 }`}
               >
-                {/* Subject Header with Progress and Controls */}
+                {/* Subject Header */}
                 <div
                   role="button"
                   tabIndex={0}
@@ -258,59 +260,52 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       onToggleSubjectExpand(key);
                     }
                   }}
-                  className="p-4 sm:p-4.5 cursor-pointer hover:bg-slate-50/70 transition-colors select-none"
+                  className="p-4 sm:p-4.5 cursor-pointer hover:bg-[#EBE4D8]/50 dark:hover:bg-[#2A2622] transition-colors select-none"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-bold text-slate-900 text-base">{course.code}</span>
+                        <span className="font-bold text-[#2B2622] dark:text-[#F5F1EA] text-base">{course.code}</span>
                         <span
-                          className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                          className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
                             course.type === 'T'
-                              ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
-                              : 'bg-purple-50 text-purple-700 border border-purple-200/60'
+                              ? 'bg-[#EBE4D8] text-[#C65D3B] dark:bg-[#2F2722] dark:text-[#D96D4B] border-[#DCD3C5] dark:border-[#423932]'
+                              : 'bg-[#EBE4D8] text-[#3D5A80] dark:bg-[#232A33] dark:text-[#88A9CB] border-[#DCD3C5] dark:border-[#35414F]'
                           }`}
                         >
                           {course.type === 'T' ? <BookOpen className="w-3 h-3" /> : <FlaskConical className="w-3 h-3" />}
                           {course.type === 'T' ? 'Theory' : 'Sessional'}
                         </span>
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#EBE4D8] dark:bg-[#2E2824] text-[#2B2622] dark:text-[#E2DACF] font-mono">
                           {course.credits} cr
                         </span>
-                        {course.notGraded && (
-                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-sm bg-amber-50 text-amber-700 border border-amber-200">
-                            Non-GPA
-                          </span>
-                        )}
                       </div>
 
-                      <h2 className="text-sm font-semibold text-slate-700 leading-snug">{course.name}</h2>
+                      <h3 className="text-sm font-semibold text-[#6E655F] dark:text-[#A8A098] leading-snug">{course.name}</h3>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {/* Individual Subject Progress Badge */}
                       <div className="text-right">
                         <div className="flex items-center gap-1.5 justify-end">
                           <span
-                            className={`text-xs font-bold font-mono px-2 py-0.5 rounded-lg ${
+                            className={`text-xs font-bold font-mono px-2 py-0.5 rounded-lg border ${
                               isComplete
-                                ? 'bg-emerald-100 text-emerald-800'
+                                ? 'bg-[#5B6B4E]/15 text-[#5B6B4E] dark:bg-[#738563]/25 dark:text-[#A3B899] border-[#5B6B4E]/30'
                                 : isInProgress
-                                ? 'bg-indigo-100 text-indigo-800'
-                                : 'bg-slate-100 text-slate-600'
+                                ? 'bg-[#EBE4D8] text-[#C65D3B] dark:bg-[#2F2722] dark:text-[#D96D4B] border-[#DCD3C5] dark:border-[#423932]'
+                                : 'bg-[#EBE4D8] dark:bg-[#2A2622] text-[#6E655F] dark:text-[#A8A098] border-[#DCD3C5] dark:border-[#38322D]'
                             }`}
                           >
                             {pct}%
                           </span>
                         </div>
-                        <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        <div className="text-[11px] text-[#8C827A] font-medium mt-0.5 font-mono">
                           {done}/{total} done
                         </div>
                       </div>
 
-                      {/* Expand Chevron */}
                       <div
-                        className={`w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-200 ${
+                        className={`w-7 h-7 rounded-lg bg-[#EBE4D8] dark:bg-[#2B2622] flex items-center justify-center text-[#6E655F] dark:text-[#A8A098] transition-transform duration-200 ${
                           isExpanded ? 'rotate-180' : ''
                         }`}
                       >
@@ -319,116 +314,99 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Individual Subject Progress Bar */}
-                  <div className="mt-3 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <motion.div
-                      initial={false}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                      className={`h-full rounded-full ${
+                  {/* Progress Bar */}
+                  <div className="mt-3 w-full bg-[#EBE4D8] dark:bg-[#2E2824] rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${
                         isComplete
-                          ? 'bg-emerald-500'
+                          ? 'bg-[#5B6B4E]'
                           : isInProgress
-                          ? 'bg-gradient-to-r from-indigo-500 to-blue-500'
-                          : 'bg-slate-300'
+                          ? 'bg-[#C65D3B] dark:bg-[#D96D4B]'
+                          : 'bg-[#DCD3C5] dark:bg-[#3E3832]'
                       }`}
+                      style={{ width: `${pct}%` }}
                     />
                   </div>
                 </div>
 
                 {/* Collapsible Topics Section */}
-                <AnimatePresence initial={false}>
-                  {isExpanded && (
-                    <motion.div
-                      key={`content-${key}`}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.25, ease: 'easeInOut' }}
-                      className="border-t border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-5"
-                    >
-                      {/* Subject Quick Actions */}
-                      <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/60 text-xs text-slate-500">
-                        <span className="font-medium">
-                          Curriculum Topics ({done} of {total} completed)
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onSetAllTopicsForCourse(course, true);
-                            }}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors"
-                          >
-                            <CheckCheck className="w-3 h-3" />
-                            Select All
-                          </button>
-                          <span className="text-slate-300">·</span>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onSetAllTopicsForCourse(course, false);
-                            }}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold text-slate-600 hover:bg-slate-200/60 transition-colors"
-                          >
-                            <RotateCcw className="w-3 h-3" />
-                            Clear
-                          </button>
-                        </div>
+                {isExpanded && (
+                  <div className="border-t border-[#E2DACF] dark:border-[#38322D] bg-[#F2EEE6]/50 dark:bg-[#1E1B18]/50 px-4 py-3 sm:px-5">
+                    {/* Actions */}
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E2DACF]/70 dark:border-[#38322D] text-xs text-[#6E655F] dark:text-[#A8A098]">
+                      <span className="font-medium font-mono text-[11px]">
+                        Topics ({done} of {total} completed)
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSetAllTopicsForCourse(course, true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#5B6B4E] dark:text-[#A3B899] hover:bg-[#5B6B4E]/10 transition-colors cursor-pointer"
+                        >
+                          <CheckCheck className="w-3 h-3" />
+                          Select All
+                        </button>
+                        <span className="text-[#8C827A]">·</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSetAllTopicsForCourse(course, false);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#6E655F] dark:text-[#A8A098] hover:bg-[#EBE4D8] dark:hover:bg-[#282320] transition-colors cursor-pointer"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          Clear
+                        </button>
                       </div>
+                    </div>
 
-                      {/* Topic Checkbox Items */}
-                      <div className="space-y-2">
-                        {course.topics.map((topic, idx) => {
-                          const topicKey = getTopicKey(level, term, course.code, idx);
-                          const isDone = Boolean(doneTopics[topicKey]);
+                    {/* Topic Checkbox Items */}
+                    <div className="space-y-1.5">
+                      {course.topics.map((topic, idx) => {
+                        const topicKey = getTopicKey(level, term, course.code, idx);
+                        const isDone = Boolean(doneTopics[topicKey]);
 
-                          return (
-                            <label
-                              key={topicKey}
-                              className={`group flex items-start gap-3.5 p-3 sm:p-3.5 rounded-xl transition-all cursor-pointer select-none border ${
-                                isDone
-                                  ? 'bg-emerald-50/50 border-emerald-200/50 text-slate-700'
-                                  : 'bg-white border-slate-200/60 hover:border-indigo-200 hover:bg-indigo-50/20 text-slate-800'
-                              }`}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={isDone}
-                                onChange={() => onToggleTopic(topicKey)}
-                                className="sr-only"
-                              />
-                              <div className="mt-0.5 flex-shrink-0">
-                                {isDone ? (
-                                  <motion.div
-                                    initial={{ scale: 0.8 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                                  >
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
-                                  </motion.div>
-                                ) : (
-                                  <Circle className="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" />
-                                )}
-                              </div>
-                              <div className="flex-1 text-xs sm:text-[13px] leading-relaxed">
-                                <span className={`font-mono text-[11px] mr-1.5 text-slate-400`}>
-                                  {idx + 1}.
-                                </span>
-                                <span className={isDone ? 'line-through text-slate-500' : ''}>
-                                  {topic}
-                                </span>
-                              </div>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                        return (
+                          <label
+                            key={topicKey}
+                            className={`group flex items-start gap-3 p-2.5 sm:p-3 rounded-xl transition-all cursor-pointer select-none border ${
+                              isDone
+                                ? 'bg-[#5B6B4E]/10 dark:bg-[#738563]/15 border-[#5B6B4E]/30 text-[#2B2622] dark:text-[#F5F1EA]'
+                                : 'bg-[#FAF6F0] dark:bg-[#24201D] border-[#E2DACF] dark:border-[#38322D] hover:border-[#C65D3B]/40 text-[#2B2622] dark:text-[#F5F1EA]'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isDone}
+                              onChange={() => onToggleTopic(topicKey)}
+                              className="sr-only"
+                            />
+                            <div className="mt-0.5 shrink-0">
+                              {isDone ? (
+                                <CheckCircle2 className="w-4 h-4 text-[#5B6B4E] dark:text-[#A3B899] fill-[#5B6B4E]/20" />
+                              ) : (
+                                <Circle className="w-4 h-4 text-[#8C827A] group-hover:text-[#C65D3B] transition-colors" />
+                              )}
+                            </div>
+                            <div className="flex-1 text-xs sm:text-[13px] leading-relaxed">
+                              <span className="font-mono text-[11px] mr-1.5 text-[#8C827A]">
+                                {idx + 1}.
+                              </span>
+                              <span className={isDone ? 'line-through text-[#8C827A] dark:text-[#8C827A]' : ''}>
+                                {topic}
+                              </span>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           })
         )}

@@ -13,9 +13,33 @@ export type GradeTuple = [string, number, number]; // [letter, gradePoint, minMa
 
 export type CourseStrength = 'S' | 'A' | 'W'; // Strong, Average, Weak
 
+export type TopicStatus =
+  | 'not_started'
+  | 'in_progress'
+  | 'studied'
+  | 'revised'
+  | 'confident';
+
+export interface StudySessionLog {
+  id: string;
+  courseKey: string;
+  courseCode: string;
+  minutes: number;
+  date: string; // ISO date string 'YYYY-MM-DD'
+  timestamp?: number;
+}
+
 export type AttendanceInputMode = 'percentage' | 'marks';
 
-export type TabKey = 'syllabus' | 'gpa' | 'target' | 'marks';
+export type TabKey =
+  | 'dashboard'
+  | 'courses'
+  | 'syllabus'
+  | 'marks'
+  | 'gpa'
+  | 'target'
+  | 'resources'
+  | 'settings';
 
 export interface AppState {
   level: number;
@@ -23,6 +47,9 @@ export interface AppState {
   activeTab: TabKey;
   targetGpa: number;
   selectedMarksCourse: string; // Course key
+  studentName?: string;
+  isDarkMode?: boolean;
+  notes?: Record<string, string>; // Course notes: key = courseCode
   // Topic completions: key = "level-term|code#topicIndex" -> boolean
   doneTopics: Record<string, boolean>;
   // Estimated grades: key = "level-term|code" -> gradePoint as string

@@ -1,13 +1,16 @@
 import { AppState, TabKey } from '../types';
 
-const STORAGE_KEY = 'ipe-planner-v2';
+const STORAGE_KEY = 'ipe-planner-v3';
 
 export const INITIAL_STATE: AppState = {
   level: 1,
   term: 1,
-  activeTab: 'syllabus',
+  activeTab: 'dashboard',
   targetGpa: 3.85,
   selectedMarksCourse: '1-1|Phy 117',
+  studentName: 'Altaf Hossain',
+  isDarkMode: false,
+  notes: {},
   doneTopics: {},
   grades: {},
   strengths: {},
@@ -18,11 +21,44 @@ export const INITIAL_STATE: AppState = {
   expandedSubjects: {},
 };
 
+export function normalizeState(raw: any): AppState {
+  if (!raw || typeof raw !== 'object') return { ...INITIAL_STATE };
+  return {
+    ...INITIAL_STATE,
+    ...raw,
+    level: Number(raw.level) || 1,
+    term: Number(raw.term) || 1,
+    activeTab: (raw.activeTab as TabKey) || 'dashboard',
+    targetGpa: Number(raw.targetGpa) || 3.85,
+    selectedMarksCourse: raw.selectedMarksCourse || '1-1|Phy 117',
+    studentName: raw.studentName || 'Altaf Hossain',
+    isDarkMode: Boolean(raw.isDarkMode),
+    notes: raw.notes || {},
+    doneTopics: raw.doneTopics || {},
+    grades: raw.grades || {},
+    strengths: raw.strengths || {},
+    attendanceMode: raw.attendanceMode || {},
+    attendancePct: raw.attendancePct || {},
+    attendanceDirectMarks: raw.attendanceDirectMarks || {},
+    ctMarks: raw.ctMarks || {},
+    expandedSubjects: raw.expandedSubjects || {},
+  };
+}
+
+export function parseBackupJson(rawJson: string): AppState | null {
+  try {
+    const parsed = JSON.parse(rawJson);
+    if (!parsed || typeof parsed !== 'object') return null;
+    return normalizeState(parsed);
+  } catch {
+    return null;
+  }
+}
+
 export function loadAppState(): AppState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('ipe-planner-v2');
     if (!raw) {
-      // Also check legacy key if user previously had data
       const legacyRaw = localStorage.getItem('ipe-planner');
       if (legacyRaw) {
         const legacy = JSON.parse(legacyRaw);
@@ -31,21 +67,7 @@ export function loadAppState(): AppState {
       return INITIAL_STATE;
     }
     const parsed = JSON.parse(raw);
-    return {
-      ...INITIAL_STATE,
-      ...parsed,
-      level: parsed.level || 1,
-      term: parsed.term || 1,
-      activeTab: (parsed.activeTab as TabKey) || 'syllabus',
-      doneTopics: parsed.doneTopics || {},
-      grades: parsed.grades || {},
-      strengths: parsed.strengths || {},
-      attendanceMode: parsed.attendanceMode || {},
-      attendancePct: parsed.attendancePct || {},
-      attendanceDirectMarks: parsed.attendanceDirectMarks || {},
-      ctMarks: parsed.ctMarks || {},
-      expandedSubjects: parsed.expandedSubjects || {},
-    };
+    return normalizeState(parsed);
   } catch (err) {
     console.warn('Failed to load saved state:', err);
     return INITIAL_STATE;
