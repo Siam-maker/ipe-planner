@@ -1,6 +1,7 @@
 import React from 'react';
 import { BookOpen, Award, CheckCircle, ShieldCheck } from 'lucide-react';
 import { GRADES } from '../data/curriculum';
+import { Footer } from './Footer';
 
 export const AcademicResourcesView: React.FC = () => {
   return (
@@ -128,6 +129,8 @@ export const AcademicResourcesView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
