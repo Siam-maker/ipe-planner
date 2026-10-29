@@ -104,7 +104,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <form onSubmit={handleSaveName} className="flex-1 w-full space-y-2 min-w-0">
             <div className="flex items-center justify-between">
               <label htmlFor="student-name-input" className="text-xs font-semibold text-[#6E655F] dark:text-[#A8A199]">
-                Display Name (নাম)
+                Display Name
               </label>
               <span className="text-[11px] text-[#6E655F] dark:text-[#A8A199]">
                 Current: <strong className="text-[#2B2622] dark:text-white font-serif">{nameInput}</strong>
@@ -140,15 +140,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </form>
         </div>
 
-        {/* AVATAR PICKER SECTION (ছেলে ও মেয়েদের অবতার) */}
+        {/* AVATAR PICKER SECTION */}
         <div className="space-y-3 pt-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-[#2B2622] dark:text-[#EDE8E1]">
-                Choose Character Avatar (অবতার নির্বাচন করুন)
+                Choose Character Avatar
               </h4>
               <p className="text-[11px] text-[#6E655F] dark:text-[#A8A199]">
-                Select from {STUDENT_AVATARS.length} handcrafted male &amp; female academic avatars.
+                Select from {STUDENT_AVATARS.length} handcrafted male and female academic avatars.
               </p>
             </div>
 
@@ -157,7 +157,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <button
                 type="button"
                 onClick={() => setAvatarFilter('all')}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                   avatarFilter === 'all'
                     ? 'bg-[#C65D3B] text-white shadow-2xs'
                     : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
@@ -168,30 +168,30 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <button
                 type="button"
                 onClick={() => setAvatarFilter('male')}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                   avatarFilter === 'male'
                     ? 'bg-[#C65D3B] text-white shadow-2xs'
                     : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
                 }`}
               >
-                Boys (ছেলে)
+                Boys
               </button>
               <button
                 type="button"
                 onClick={() => setAvatarFilter('female')}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                   avatarFilter === 'female'
                     ? 'bg-[#C65D3B] text-white shadow-2xs'
                     : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
                 }`}
               >
-                Girls (মেয়ে)
+                Girls
               </button>
             </div>
           </div>
 
-          {/* Grid of Avatars */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 sm:gap-3 pt-1">
+          {/* Clean Grid of Avatars - Icons only, no text underneath */}
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-3 sm:gap-3.5 pt-1.5">
             {filteredAvatars.map((av) => {
               const isSelected = selectedAvatarId === av.id;
               return (
@@ -199,13 +199,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   key={av.id}
                   type="button"
                   onClick={() => handleSelectAvatar(av.id)}
-                  className={`group relative flex flex-col items-center text-center p-2.5 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                  title={`${av.name} · ${av.styleDesc}`}
+                  className={`group relative flex items-center justify-center p-2 rounded-2xl border transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? 'bg-[#FAF6F0] dark:bg-[#2B2420] border-[#C65D3B] ring-2 ring-[#C65D3B]/40 shadow-sm scale-[1.03]'
+                      ? 'bg-[#FAF6F0] dark:bg-[#2B2420] border-[#C65D3B] ring-2 ring-[#C65D3B]/40 shadow-sm scale-[1.04]'
                       : 'bg-[#F2EEE6] dark:bg-[#1C1A18] border-[#E8E2D9] dark:border-[#2E2924] hover:bg-[#EBE4D8] dark:hover:bg-[#28221D] hover:border-[#DCD3C5]'
                   }`}
                 >
-                  <div className="relative mb-1.5">
+                  <div className="relative">
                     <AvatarGraphic
                       avatarId={av.id}
                       name={av.name}
@@ -218,13 +219,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       </span>
                     )}
                   </div>
-
-                  <span className="text-xs font-bold text-[#2B2622] dark:text-[#EDE8E1] truncate w-full leading-tight">
-                    {av.name}
-                  </span>
-                  <span className="text-[10px] text-[#6E655F] dark:text-[#A8A199] truncate w-full leading-tight mt-0.5 font-medium">
-                    {av.nameBn.split(' ')[0]}
-                  </span>
                 </button>
               );
             })}

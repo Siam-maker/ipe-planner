@@ -408,6 +408,7 @@ export default function App() {
             <SettingsView
               state={state}
               onUpdateStudentName={handleUpdateStudentName}
+              onUpdateStudentAvatar={handleUpdateStudentAvatar}
               isDarkMode={Boolean(state.isDarkMode)}
               onToggleDarkMode={handleToggleDarkMode}
               onResetTerm={handleResetTerm}

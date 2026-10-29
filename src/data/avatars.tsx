@@ -3,7 +3,6 @@ import React from 'react';
 export interface StudentAvatar {
   id: string;
   name: string;
-  nameBn: string;
   gender: 'male' | 'female';
   styleDesc: string;
   bgColor: string;
@@ -11,11 +10,10 @@ export interface StudentAvatar {
 }
 
 export const STUDENT_AVATARS: StudentAvatar[] = [
-  // --- MALE AVATARS (ছেলেদের অবতার) ---
+  // --- MALE AVATARS ---
   {
     id: 'boy-adam',
     name: 'Adam',
-    nameBn: 'আদম (Default)',
     gender: 'male',
     styleDesc: 'Neat hair & terracotta sweater',
     bgColor: '#F0E2D8',
@@ -24,7 +22,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'boy-zayn',
     name: 'Zayn',
-    nameBn: 'যায়ন (Glasses)',
     gender: 'male',
     styleDesc: 'Curly hair & wireframe glasses',
     bgColor: '#DEE8D6',
@@ -33,7 +30,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'boy-tanvir',
     name: 'Tanvir',
-    nameBn: 'তানভীর (Scholar)',
     gender: 'male',
     styleDesc: 'Side-part & academic blazer',
     bgColor: '#D9E3EF',
@@ -42,7 +38,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'boy-farhan',
     name: 'Farhan',
-    nameBn: 'ফারহান (Hoodie)',
     gender: 'male',
     styleDesc: 'Messy crop & mustard hoodie',
     bgColor: '#F5ECCB',
@@ -51,7 +46,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'boy-arian',
     name: 'Arian',
-    nameBn: 'আরিয়ান (Sporty Cap)',
     gender: 'male',
     styleDesc: 'Athletic cap & graphic tee',
     bgColor: '#EBE4D8',
@@ -60,7 +54,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'boy-tahmid',
     name: 'Tahmid',
-    nameBn: 'তাহমিদ (Beard & Polo)',
     gender: 'male',
     styleDesc: 'Trim beard & classic polo',
     bgColor: '#E8DFD3',
@@ -69,18 +62,16 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'boy-nafis',
     name: 'Nafis',
-    nameBn: 'নাফিস (Headphones)',
     gender: 'male',
     styleDesc: 'Fluffy hair & studio headphones',
     bgColor: '#E1EDEB',
     badgeColor: '#3D7B75',
   },
 
-  // --- FEMALE AVATARS (মেয়েদের অবতার) ---
+  // --- FEMALE AVATARS ---
   {
     id: 'girl-zara',
     name: 'Zara',
-    nameBn: 'যারা (Wavy Hair)',
     gender: 'female',
     styleDesc: 'Long wavy hair & terracotta knit',
     bgColor: '#F2DFD8',
@@ -89,7 +80,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'girl-fatima',
     name: 'Fatima',
-    nameBn: 'ফাতিমা (Sage Hijab)',
     gender: 'female',
     styleDesc: 'Elegantly draped sage hijab',
     bgColor: '#E2EBDC',
@@ -98,7 +88,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'girl-ayesha',
     name: 'Ayesha',
-    nameBn: 'আয়েশা (Rose Hijab)',
     gender: 'female',
     styleDesc: 'Terracotta-rose pinned hijab',
     bgColor: '#F4E4DF',
@@ -107,7 +96,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'girl-samira',
     name: 'Samira',
-    nameBn: 'সামিরা (Bun & Glasses)',
     gender: 'female',
     styleDesc: 'High topknot bun & glasses',
     bgColor: '#F7EDD5',
@@ -116,7 +104,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'girl-naila',
     name: 'Naila',
-    nameBn: 'নায়লা (Chic Bob)',
     gender: 'female',
     styleDesc: 'Sleek bob cut & pearl studs',
     bgColor: '#DFE7ED',
@@ -125,7 +112,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'girl-maya',
     name: 'Maya',
-    nameBn: 'মায়া (Ponytail)',
     gender: 'female',
     styleDesc: 'High ponytail & zipped jacket',
     bgColor: '#EAE1D6',
@@ -134,7 +120,6 @@ export const STUDENT_AVATARS: StudentAvatar[] = [
   {
     id: 'girl-anika',
     name: 'Anika',
-    nameBn: 'আনিকা (Curls)',
     gender: 'female',
     styleDesc: 'Voluminous curls & denim layers',
     bgColor: '#E4EADF',
