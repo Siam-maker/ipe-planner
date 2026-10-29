@@ -26,13 +26,10 @@ export const Footer: React.FC = () => {
 
             {/* Core Details */}
             <div className="min-w-0 flex-1 space-y-1.5">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
                 <h4 className="font-bold text-sm sm:text-base text-[#2B2622] dark:text-[#EDE8E1] tracking-tight">
                   Samiun Atif Siam
                 </h4>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#5B6B4E]/15 text-[#44513A] dark:text-[#A7BF95] border border-[#5B6B4E]/30 font-mono">
-                  IPE &apos;25
-                </span>
               </div>
 
               <p className="text-xs text-[#6E655F] dark:text-[#A8A199] flex items-center gap-1.5">
@@ -46,7 +43,7 @@ export const Footer: React.FC = () => {
                   <IdCard className="w-3.5 h-3.5 text-[#8C827A] shrink-0" />
                   <span className="font-medium">Student ID:</span>
                   <span className="font-mono font-bold text-[#2B2622] dark:text-[#EDE8E1]">
-                    2508019 (IPE &apos;25)
+                    2508019
                   </span>
                 </div>
 
