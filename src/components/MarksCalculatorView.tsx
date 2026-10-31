@@ -200,32 +200,37 @@ export const MarksCalculatorView: React.FC<MarksCalculatorViewProps> = ({
           </div>
 
           {/* DUAL MODE SELECTOR BUTTONS */}
-          <div className="flex items-center bg-[#EBE4D8] dark:bg-[#282320] p-1 rounded-xl self-start sm:self-auto border border-[#DCD3C5] dark:border-[#3E3832]">
-            <button
-              type="button"
-              onClick={() => onSetAttendanceMode(courseKey, 'percentage')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none cursor-pointer ${
-                activeMode === 'percentage'
-                  ? 'bg-[#C65D3B] text-white shadow-xs'
-                  : 'text-[#6E655F] dark:text-[#A8A098] hover:text-[#2B2622] dark:hover:text-[#F5F1EA]'
-              }`}
-            >
-              <Percent className="w-3.5 h-3.5" />
-              <span>Attendance %</span>
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="no-print flex items-center bg-[#EBE4D8] dark:bg-[#282320] p-1 rounded-xl self-start sm:self-auto border border-[#DCD3C5] dark:border-[#3E3832]">
+              <button
+                type="button"
+                onClick={() => onSetAttendanceMode(courseKey, 'percentage')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none cursor-pointer ${
+                  activeMode === 'percentage'
+                    ? 'bg-[#C65D3B] text-white shadow-xs'
+                    : 'text-[#6E655F] dark:text-[#A8A098] hover:text-[#2B2622] dark:hover:text-[#F5F1EA]'
+                }`}
+              >
+                <Percent className="w-3.5 h-3.5" />
+                <span>Attendance %</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => onSetAttendanceMode(courseKey, 'marks')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none cursor-pointer ${
-                activeMode === 'marks'
-                  ? 'bg-[#C65D3B] text-white shadow-xs'
-                  : 'text-[#6E655F] dark:text-[#A8A098] hover:text-[#2B2622] dark:hover:text-[#F5F1EA]'
-              }`}
-            >
-              <Award className="w-3.5 h-3.5" />
-              <span>Direct Marks</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => onSetAttendanceMode(courseKey, 'marks')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none cursor-pointer ${
+                  activeMode === 'marks'
+                    ? 'bg-[#C65D3B] text-white shadow-xs'
+                    : 'text-[#6E655F] dark:text-[#A8A098] hover:text-[#2B2622] dark:hover:text-[#F5F1EA]'
+                }`}
+              >
+                <Award className="w-3.5 h-3.5" />
+                <span>Direct Marks</span>
+              </button>
+            </div>
+            <span className="hidden print-badge font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-[#EBE4D8] text-[#2B2622] border border-[#DCD3C5]">
+              Method: {activeMode === 'percentage' ? 'Attendance %' : 'Direct Marks'}
+            </span>
           </div>
         </div>
 
@@ -258,7 +263,7 @@ export const MarksCalculatorView: React.FC<MarksCalculatorViewProps> = ({
               </div>
 
               {/* Attendance Quick Presets */}
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="no-print flex flex-wrap items-center gap-1.5">
                 {[60, 70, 75, 80, 85, 90, 95, 100].map((preset) => (
                   <button
                     key={preset}

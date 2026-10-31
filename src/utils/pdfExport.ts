@@ -13,7 +13,8 @@ export interface ExportPdfOptions {
 
 /**
  * Captures an HTML element and exports it as a clean, high-resolution A4 PDF document.
- * Automatically slices long content across multiple pages with official BUET IPE header on page 1.
+ * Correctly reads live user inputs (grades, marks, checkboxes, text fields) from the original DOM
+ * and replaces interactive controls with formal academic print representations.
  */
 export async function exportElementToPdf({
   element,
@@ -23,30 +24,113 @@ export async function exportElementToPdf({
   level,
   term,
 }: ExportPdfOptions): Promise<void> {
-  // Create an offscreen wrapper with formal academic styling for the PDF
+  // Query all live form controls from the original DOM to preserve user inputs
+  const origFormElements = Array.from(element.querySelectorAll<HTMLElement>('input, select, textarea'));
+
+  // Clone the container DOM tree
   const clone = element.cloneNode(true) as HTMLElement;
+  const cloneFormElements = Array.from(clone.querySelectorAll<HTMLElement>('input, select, textarea'));
 
-  // Remove interactive buttons, inputs icons that shouldn't appear in printed PDF
-  const buttonsToRemove = clone.querySelectorAll('button:not(.keep-in-print), .no-print');
-  buttonsToRemove.forEach((btn) => btn.remove());
+  // 1. Convert all form controls into clean, permanent text/badges based on live inputs
+  origFormElements.forEach((orig, idx) => {
+    const cln = cloneFormElements[idx];
+    if (!cln) return;
 
-  // Force expand any collapsed containers or inputs to show their values
-  clone.querySelectorAll('input').forEach((input) => {
-    const span = document.createElement('span');
-    span.textContent = input.value || input.placeholder || '—';
-    span.className = 'font-mono font-bold text-[#2B2622] text-sm';
-    input.parentNode?.replaceChild(span, input);
+    if (orig instanceof HTMLSelectElement) {
+      const selectedIndex = orig.selectedIndex;
+      const selectedOption = selectedIndex >= 0 ? orig.options[selectedIndex] : null;
+      const selectedValue = orig.value;
+      const selectedText = selectedOption ? selectedOption.text.trim() : '';
+
+      const replacement = document.createElement('div');
+      replacement.style.display = 'inline-block';
+
+      // Check if this is a GPA grade dropdown (e.g. "Select Grade" or "A+ · 4.00")
+      if (
+        !selectedValue ||
+        selectedText.toLowerCase().includes('select grade') ||
+        selectedValue === ''
+      ) {
+        replacement.innerHTML = `
+          <span style="display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; font-family: monospace; background-color: #EBE4D8; color: #8C827A; border: 1px solid #DCD3C5;">
+            Not Graded
+          </span>
+        `;
+      } else {
+        // User entered grade - display prominently as requested
+        replacement.innerHTML = `
+          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; font-family: monospace; background-color: #F8ECE8; color: #A64525; border: 1.5px solid #C65D3B;">
+            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #C65D3B;"></span>
+            <span>Grade: <strong>${selectedText}</strong></span>
+          </span>
+        `;
+      }
+
+      cln.parentNode?.replaceChild(replacement, cln);
+    } else if (orig instanceof HTMLInputElement) {
+      if (orig.type === 'checkbox') {
+        const isChecked = orig.checked;
+        const replacement = document.createElement('span');
+        replacement.style.display = 'inline-flex';
+        replacement.style.alignItems = 'center';
+        replacement.style.fontSize = '11px';
+
+        if (isChecked) {
+          replacement.innerHTML = `
+            <span style="display: inline-flex; align-items: center; gap: 4px; color: #5B6B4E; font-weight: 700;">
+              <span style="color: #5B6B4E; font-weight: 900;">✓</span> Completed
+            </span>
+          `;
+        } else {
+          replacement.innerHTML = `
+            <span style="display: inline-flex; align-items: center; gap: 4px; color: #8C827A; font-weight: 500;">
+              <span style="color: #8C827A;">○</span> Pending
+            </span>
+          `;
+        }
+        cln.parentNode?.replaceChild(replacement, cln);
+      } else {
+        // Text / Number input (CT marks, attendance %, target GPA)
+        const val = orig.value.trim();
+        const replacement = document.createElement('span');
+        replacement.style.display = 'inline-block';
+
+        if (val) {
+          replacement.innerHTML = `
+            <span style="font-family: monospace; font-weight: 800; font-size: 13px; color: #2B2622; background-color: #F2EEE6; padding: 2px 8px; border-radius: 6px; border: 1px solid #DCD3C5; display: inline-block;">
+              ${val}
+            </span>
+          `;
+        } else {
+          replacement.innerHTML = `
+            <span style="font-family: monospace; font-size: 12px; color: #8C827A;">
+              —
+            </span>
+          `;
+        }
+        cln.parentNode?.replaceChild(replacement, cln);
+      }
+    } else if (orig instanceof HTMLTextAreaElement) {
+      const val = orig.value.trim();
+      const replacement = document.createElement('div');
+      replacement.style.fontFamily = 'monospace';
+      replacement.style.fontSize = '12px';
+      replacement.style.color = '#2B2622';
+      replacement.textContent = val || '—';
+      cln.parentNode?.replaceChild(replacement, cln);
+    }
   });
 
-  clone.querySelectorAll('select').forEach((select) => {
-    const span = document.createElement('span');
-    const selectedOption = select.options[select.selectedIndex];
-    span.textContent = selectedOption ? selectedOption.text : '—';
-    span.className = 'font-mono font-bold text-[#2B2622] text-sm';
-    select.parentNode?.replaceChild(span, select);
+  // 2. Make print badges visible in the exported document
+  clone.querySelectorAll('.print-badge').forEach((el) => {
+    (el as HTMLElement).style.display = 'inline-flex';
   });
 
-  // Create temporary container attached to document for html2canvas rendering
+  // 3. Remove non-printable elements and interactive buttons
+  const elementsToRemove = clone.querySelectorAll('button:not(.keep-in-print), .no-print');
+  elementsToRemove.forEach((el) => el.remove());
+
+  // 4. Create temporary container attached to document for html2canvas rendering
   const printWrapper = document.createElement('div');
   printWrapper.id = 'pdf-render-temp-container';
   printWrapper.style.position = 'fixed';
@@ -83,7 +167,7 @@ export async function exportElementToPdf({
   const footerHtml = `
     <div style="margin-top: 32px; padding-top: 14px; border-top: 1px solid #E2DACF; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #8C827A;">
       <span>BUET Department of Industrial & Production Engineering · IPE Study Planner</span>
-      <span>Official Student Record Export · Page 1 of 1</span>
+      <span>Official Student Record Export</span>
     </div>
   `;
 

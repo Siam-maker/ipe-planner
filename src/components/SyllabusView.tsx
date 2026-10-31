@@ -199,7 +199,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       </div>
 
       {/* Search & Filter Controls */}
-      <div className="bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E2DACF] dark:border-[#38322D] rounded-2xl p-3 shadow-2xs space-y-2.5">
+      <div className="no-print bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E2DACF] dark:border-[#38322D] rounded-2xl p-3 shadow-2xs space-y-2.5">
         <div className="relative">
           <Search className="w-4 h-4 text-[#8C827A] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input

@@ -89,7 +89,7 @@ export const GpaCalculatorView: React.FC<GpaCalculatorViewProps> = ({
       </div>
 
       {/* Quick Batch Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E8E2D9] dark:border-[#2E2924] rounded-2xl p-3 sm:p-4 shadow-2xs text-xs">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E8E2D9] dark:border-[#2E2924] rounded-2xl p-3 sm:p-4 shadow-2xs text-xs">
         <span className="font-semibold text-[#6E655F] dark:text-[#A8A199]">Quick Presets:</span>
         <div className="flex items-center gap-2 flex-wrap">
           <button

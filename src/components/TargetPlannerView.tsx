@@ -99,7 +99,7 @@ export const TargetPlannerView: React.FC<TargetPlannerViewProps> = ({
         </div>
 
         {/* Quick Presets */}
-        <div>
+        <div className="no-print">
           <div className="text-[11px] font-bold text-[#6E655F] dark:text-[#A8A199] uppercase tracking-wider mb-2">
             Target Presets
           </div>
@@ -244,34 +244,39 @@ export const TargetPlannerView: React.FC<TargetPlannerViewProps> = ({
               </div>
 
               <div className="pt-3 border-t border-[#EFE9DF] dark:border-[#2E2924] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center bg-[#F2EEE6] dark:bg-[#1C1A18] p-1 rounded-xl w-full sm:w-auto">
-                  {(
-                    [
-                      { id: 'S', label: 'Strong' },
-                      { id: 'A', label: 'Average' },
-                      { id: 'W', label: 'Weak' },
-                    ] as const
-                  ).map((opt) => {
-                    const isSelected = currentStrength === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => onSetStrength(key, opt.id)}
-                        className={`flex-1 sm:flex-none px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all select-none ${
-                          isSelected
-                            ? opt.id === 'S'
-                              ? 'bg-[#5B6B4E] text-white shadow-2xs'
-                              : opt.id === 'A'
-                              ? 'bg-[#C65D3B] text-white shadow-2xs'
-                              : 'bg-[#E8B04A] text-[#2B2622] font-bold shadow-2xs'
-                            : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
+                <div className="flex items-center gap-2">
+                  <div className="no-print flex items-center bg-[#F2EEE6] dark:bg-[#1C1A18] p-1 rounded-xl w-full sm:w-auto">
+                    {(
+                      [
+                        { id: 'S', label: 'Strong' },
+                        { id: 'A', label: 'Average' },
+                        { id: 'W', label: 'Weak' },
+                      ] as const
+                    ).map((opt) => {
+                      const isSelected = currentStrength === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => onSetStrength(key, opt.id)}
+                          className={`flex-1 sm:flex-none px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all select-none ${
+                            isSelected
+                              ? opt.id === 'S'
+                                ? 'bg-[#5B6B4E] text-white shadow-2xs'
+                                : opt.id === 'A'
+                                ? 'bg-[#C65D3B] text-white shadow-2xs'
+                                : 'bg-[#E8B04A] text-[#2B2622] font-bold shadow-2xs'
+                              : 'text-[#6E655F] dark:text-[#A8A199] hover:text-[#2B2622] dark:hover:text-white'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <span className="hidden print-badge font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-[#EBE4D8] text-[#2B2622] border border-[#DCD3C5]">
+                    Confidence: {currentStrength === 'S' ? 'Strong (Aim: A+)' : currentStrength === 'A' ? 'Average (Aim: A)' : 'Weak (Aim: ≤ B)'}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between sm:justify-end gap-2 text-xs">
