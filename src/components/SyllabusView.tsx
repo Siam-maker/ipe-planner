@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   CheckCircle2,
   Circle,
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { Course } from '../types';
 import { getCourseKey, getTopicKey } from '../data/curriculum';
+import { exportElementToPdf } from '../utils/pdfExport';
+import { DownloadPdfButton } from './DownloadPdfButton';
 
 interface SyllabusViewProps {
   level: number;
@@ -23,6 +25,7 @@ interface SyllabusViewProps {
   onToggleTopic: (topicKey: string) => void;
   onToggleSubjectExpand: (subjectKey: string) => void;
   onSetAllTopicsForCourse: (course: Course, done: boolean) => void;
+  studentName?: string;
 }
 
 export const SyllabusView: React.FC<SyllabusViewProps> = ({
@@ -34,7 +37,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onToggleTopic,
   onToggleSubjectExpand,
   onSetAllTopicsForCourse,
+  studentName = 'Adam',
 }) => {
+  const reportRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'theory' | 'sessional' | 'in-progress' | 'completed'>('all');
 
@@ -113,19 +118,36 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
   const visibleCourses = coursesWithStats.filter((c) => c.matches);
 
+  const handleDownloadPdf = async () => {
+    if (!reportRef.current) return;
+    await exportElementToPdf({
+      element: reportRef.current,
+      fileName: `BUET_IPE_Syllabus_L${level}T${term}_${studentName.replace(/\s+/g, '_')}.pdf`,
+      reportTitle: `Syllabus Progress Report · Level ${level} Term ${term === 1 ? 'I' : 'II'}`,
+      studentName,
+      level,
+      term,
+    });
+  };
+
   return (
     <div className="space-y-5 pb-12">
       {/* Header */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2">
-          <BookOpenCheck className="w-6 h-6 text-[#C65D3B] dark:text-[#D96D4B]" />
-          <span>Syllabus Progress Tracker</span>
-        </h2>
-        <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5">
-          Track official syllabus modules and topics covered for Level {level} Term {term}.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2">
+            <BookOpenCheck className="w-6 h-6 text-[#C65D3B] dark:text-[#D96D4B]" />
+            <span>Syllabus Progress Tracker</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5">
+            Track official syllabus modules and topics covered for Level {level} Term {term}.
+          </p>
+        </div>
+
+        <DownloadPdfButton onDownload={handleDownloadPdf} label="Download Syllabus PDF" />
       </div>
 
+      <div ref={reportRef} className="space-y-5">
       {/* Term Progress Hero Banner with Warm Editorial Palette */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#2D2622] via-[#241F1C] to-[#1C1816] text-[#F5F1EA] rounded-3xl p-5 sm:p-6 shadow-md border border-[#483E36]">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -410,6 +432,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             );
           })
         )}
+      </div>
       </div>
     </div>
   );

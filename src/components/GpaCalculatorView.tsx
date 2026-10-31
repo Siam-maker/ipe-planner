@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Award, GraduationCap, CheckCircle2, RotateCcw, Sparkles } from 'lucide-react';
 import { Course } from '../types';
 import { GRADES, getCourseKey } from '../data/curriculum';
 import { calculateGpa } from '../utils/calculator';
+import { exportElementToPdf } from '../utils/pdfExport';
+import { DownloadPdfButton } from './DownloadPdfButton';
 
 interface GpaCalculatorViewProps {
   level: number;
@@ -11,6 +13,7 @@ interface GpaCalculatorViewProps {
   grades: Record<string, string>;
   onSetGrade: (courseKey: string, gradePoint: string) => void;
   onSetAllGrades: (gradePoint: string) => void;
+  studentName?: string;
 }
 
 export const GpaCalculatorView: React.FC<GpaCalculatorViewProps> = ({
@@ -20,24 +23,43 @@ export const GpaCalculatorView: React.FC<GpaCalculatorViewProps> = ({
   grades,
   onSetGrade,
   onSetAllGrades,
+  studentName = 'Adam',
 }) => {
+  const reportRef = useRef<HTMLDivElement>(null);
   const gpaResult = useMemo(() => {
     return calculateGpa(courses, grades, (code) => getCourseKey(level, term, code));
   }, [courses, grades, level, term]);
 
+  const handleDownloadPdf = async () => {
+    if (!reportRef.current) return;
+    await exportElementToPdf({
+      element: reportRef.current,
+      fileName: `BUET_IPE_GPA_Report_L${level}T${term}_${studentName.replace(/\s+/g, '_')}.pdf`,
+      reportTitle: `Semester GPA & Grade Sheet · Level ${level} Term ${term === 1 ? 'I' : 'II'}`,
+      studentName,
+      level,
+      term,
+    });
+  };
+
   return (
     <div className="space-y-6 pb-12 max-w-4xl mx-auto">
       {/* Header */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2.5">
-          <GraduationCap className="w-6 h-6 text-[#C65D3B]" />
-          <span>GPA &amp; Credit-Weighted Grade Calculator</span>
-        </h2>
-        <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A199] mt-1">
-          Official BUET credit-weighted Grade Point Average calculation for Level {level} Term {term}.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2.5">
+            <GraduationCap className="w-6 h-6 text-[#C65D3B]" />
+            <span>GPA &amp; Credit-Weighted Grade Calculator</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A199] mt-1">
+            Official BUET credit-weighted Grade Point Average calculation for Level {level} Term {term}.
+          </p>
+        </div>
+
+        <DownloadPdfButton onDownload={handleDownloadPdf} label="Download GPA Sheet PDF" />
       </div>
 
+      <div ref={reportRef} className="space-y-6">
       {/* GPA Hero Card - Editorial Dark Espresso with Terracotta accent */}
       <div className="bg-gradient-to-br from-[#2B2622] via-[#352F2B] to-[#221D1A] text-[#FAF6F0] rounded-3xl p-6 sm:p-8 shadow-sm border border-[#443C36] text-center relative overflow-hidden">
         <div className="text-xs font-bold uppercase tracking-wider text-[#E8B04A] mb-1">
@@ -166,6 +188,7 @@ export const GpaCalculatorView: React.FC<GpaCalculatorViewProps> = ({
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

@@ -358,6 +358,7 @@ export default function App() {
               onToggleTopic={handleToggleTopic}
               onToggleSubjectExpand={handleToggleSubjectExpand}
               onSetAllTopicsForCourse={handleSetAllTopicsForCourse}
+              studentName={state.studentName || 'Adam'}
             />
           )}
 
@@ -376,6 +377,7 @@ export default function App() {
               onSetAttendanceDirectMarks={handleSetAttendanceDirectMarks}
               ctMarks={state.ctMarks}
               onSetCtMark={handleSetCtMark}
+              studentName={state.studentName || 'Adam'}
             />
           )}
 
@@ -387,6 +389,7 @@ export default function App() {
               grades={state.grades}
               onSetGrade={handleSetGrade}
               onSetAllGrades={handleSetAllGrades}
+              studentName={state.studentName || 'Adam'}
             />
           )}
 
@@ -399,6 +402,7 @@ export default function App() {
               onSetTargetGpa={handleSetTargetGpa}
               strengths={state.strengths}
               onSetStrength={handleSetStrength}
+              studentName={state.studentName || 'Adam'}
             />
           )}
 

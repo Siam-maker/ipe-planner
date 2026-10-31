@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   Percent,
   Award,
@@ -14,6 +14,8 @@ import {
   calculateCTMarks,
   calculateFinalNeeded,
 } from '../utils/calculator';
+import { exportElementToPdf } from '../utils/pdfExport';
+import { DownloadPdfButton } from './DownloadPdfButton';
 
 interface MarksCalculatorViewProps {
   level: number;
@@ -29,6 +31,7 @@ interface MarksCalculatorViewProps {
   onSetAttendanceDirectMarks: (courseKey: string, val: string) => void;
   ctMarks: Record<string, string>;
   onSetCtMark: (ctKey: string, val: string) => void;
+  studentName?: string;
 }
 
 export const MarksCalculatorView: React.FC<MarksCalculatorViewProps> = ({
@@ -45,7 +48,9 @@ export const MarksCalculatorView: React.FC<MarksCalculatorViewProps> = ({
   onSetAttendanceDirectMarks,
   ctMarks,
   onSetCtMark,
+  studentName = 'Adam',
 }) => {
+  const reportRef = useRef<HTMLDivElement>(null);
   // Only Theory courses have CT + Attendance + Final written exams
   const theoryCourses = useMemo(() => courses.filter((c) => c.type === 'T'), [courses]);
 
@@ -99,19 +104,36 @@ export const MarksCalculatorView: React.FC<MarksCalculatorViewProps> = ({
     return finalExamRows[0];
   }, [finalExamRows]);
 
+  const handleDownloadPdf = async () => {
+    if (!reportRef.current || !currentCourse) return;
+    await exportElementToPdf({
+      element: reportRef.current,
+      fileName: `BUET_IPE_Marks_Finals_${currentCourse.code}_${studentName.replace(/\s+/g, '_')}.pdf`,
+      reportTitle: `Continuous Assessment & Finals Analysis · ${currentCourse.code}: ${currentCourse.name}`,
+      studentName,
+      level,
+      term,
+    });
+  };
+
   return (
     <div className="space-y-5 pb-12">
       {/* Header */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2">
-          <Calculator className="w-6 h-6 text-[#C65D3B] dark:text-[#D96D4B]" />
-          <span>Marks &amp; Finals Calculator</span>
-        </h2>
-        <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5">
-          Calculate continuous assessment (Attendance + CT) and required marks in BUET Term Finals.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#F5F1EA] flex items-center gap-2">
+            <Calculator className="w-6 h-6 text-[#C65D3B] dark:text-[#D96D4B]" />
+            <span>Marks &amp; Finals Calculator</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A098] mt-0.5">
+            Calculate continuous assessment (Attendance + CT) and required marks in BUET Term Finals.
+          </p>
+        </div>
+
+        <DownloadPdfButton onDownload={handleDownloadPdf} label="Download Marks Sheet PDF" />
       </div>
 
+      <div ref={reportRef} className="space-y-5">
       {/* Course Selector & Breakdown Header */}
       <div className="bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E2DACF] dark:border-[#38322D] rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2.5">
@@ -502,6 +524,7 @@ export const MarksCalculatorView: React.FC<MarksCalculatorViewProps> = ({
         <div className="mt-3.5 text-[11px] text-[#8C827A] leading-relaxed font-sans">
           * Final Needed = Grade cutoff - Attendance - Best CTs. In BUET, theory finals have two sections: Section A ({credits * 35} marks) and Section B ({credits * 35} marks).
         </div>
+      </div>
       </div>
     </div>
   );

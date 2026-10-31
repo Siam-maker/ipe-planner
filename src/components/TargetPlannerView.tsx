@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Target, ShieldAlert, Award, Sparkles } from 'lucide-react';
 import { Course, CourseStrength } from '../types';
 import { getCourseKey } from '../data/curriculum';
 import { calculateTargetPlan } from '../utils/calculator';
+import { exportElementToPdf } from '../utils/pdfExport';
+import { DownloadPdfButton } from './DownloadPdfButton';
 
 interface TargetPlannerViewProps {
   level: number;
@@ -12,6 +14,7 @@ interface TargetPlannerViewProps {
   onSetTargetGpa: (gpa: number) => void;
   strengths: Record<string, CourseStrength>;
   onSetStrength: (courseKey: string, s: CourseStrength) => void;
+  studentName?: string;
 }
 
 export const TargetPlannerView: React.FC<TargetPlannerViewProps> = ({
@@ -22,7 +25,9 @@ export const TargetPlannerView: React.FC<TargetPlannerViewProps> = ({
   onSetTargetGpa,
   strengths,
   onSetStrength,
+  studentName = 'Adam',
 }) => {
+  const reportRef = useRef<HTMLDivElement>(null);
   const eligibleCourses = useMemo(() => courses.filter((c) => !c.notGraded), [courses]);
 
   const planResult = useMemo(() => {
@@ -37,19 +42,36 @@ export const TargetPlannerView: React.FC<TargetPlannerViewProps> = ({
     });
   };
 
+  const handleDownloadPdf = async () => {
+    if (!reportRef.current) return;
+    await exportElementToPdf({
+      element: reportRef.current,
+      fileName: `BUET_IPE_Target_Strategy_L${level}T${term}_${studentName.replace(/\s+/g, '_')}.pdf`,
+      reportTitle: `Target GPA Strategy Plan · Level ${level} Term ${term === 1 ? 'I' : 'II'}`,
+      studentName,
+      level,
+      term,
+    });
+  };
+
   return (
     <div className="space-y-6 pb-12 max-w-4xl mx-auto">
       {/* Header */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2.5">
-          <Target className="w-6 h-6 text-[#C65D3B]" />
-          <span>Target GPA Blueprint &amp; Strategy</span>
-        </h2>
-        <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A199] mt-1">
-          Map out the minimum letter grade you need in each course to hit your goal.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2B2622] dark:text-[#EDE8E1] flex items-center gap-2.5">
+            <Target className="w-6 h-6 text-[#C65D3B]" />
+            <span>Target GPA Blueprint &amp; Strategy</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-[#6E655F] dark:text-[#A8A199] mt-1">
+            Map out the minimum letter grade you need in each course to hit your goal.
+          </p>
+        </div>
+
+        <DownloadPdfButton onDownload={handleDownloadPdf} label="Download Target Plan PDF" />
       </div>
 
+      <div ref={reportRef} className="space-y-6">
       {/* Target Setting Card */}
       <div className="bg-[#FAF6F0] dark:bg-[#221F1C] border border-[#E8E2D9] dark:border-[#2E2924] rounded-2xl p-4 sm:p-6 shadow-2xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#EFE9DF] dark:border-[#2E2924]">
@@ -272,6 +294,7 @@ export const TargetPlannerView: React.FC<TargetPlannerViewProps> = ({
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
